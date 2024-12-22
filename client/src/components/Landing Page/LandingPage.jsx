@@ -1,4 +1,3 @@
-import React from "react";
 import { Box, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
@@ -9,6 +8,7 @@ const LandingPage = () => {
   const handleLogout = () => {
     // Clear user session or token if any
     console.log("User logged out");
+    localStorage.removeItem("token");
     navigate("/login"); // Redirect to login page
   };
 

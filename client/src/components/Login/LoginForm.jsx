@@ -7,7 +7,7 @@ import {
   IconButton,
   InputAdornment} from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useVisibility } from "../../contexts/VisibilityContext";
 import { useEffect, useState } from "react";
 import { Visibility, VisibilityOff } from '@mui/icons-material';
@@ -19,6 +19,8 @@ const LoginForm = () => {
     const { setVisibleButton } = useVisibility();
     const [error, setError] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const location = useLocation();
+    const from = location.state?.from?.pathname || "/";
 
     useEffect(() => {
         setVisibleButton("signup"); // Show only the Sign Up button
@@ -35,10 +37,14 @@ const LoginForm = () => {
                 },
                 body: JSON.stringify(data),
         });
+        // should be removed when actual authentication is implemented
+        localStorage.setItem("token", "example_token");
         navigate("/landingPage");
         if (response.ok) {
             const result = await response.json();
             console.log("Login Successful:", result);
+            localStorage.setItem("token", "example_token");
+            navigate(from);
             // Redirect to the dashboard or home page
             
         } else {

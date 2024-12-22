@@ -6,6 +6,7 @@ import RegistrationForm from './components/Registration/RegistrationForm';
 import Layout from './components/Layout';
 import LoginForm from './components/Login/LoginForm';
 import LandingPage from './components/Landing Page/LandingPage';
+import PrivateRoute from './components/PrivateRoute';
 
 
 function App() {
@@ -34,7 +35,7 @@ function App() {
               <Route index element={<HomePage />} /> 
               <Route path="/register" element={<RegistrationForm />} />
               <Route path="/login" element={<LoginForm />} />
-              <Route path="/landingPage" element={<LandingPage />} />
+              <Route path="/landingPage" element={<PrivateRoute><LandingPage /></PrivateRoute>} />
               </Route>   
           </Routes>
       </Router>
