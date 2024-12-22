@@ -52,15 +52,17 @@ const LoginForm = () => {
 
     return (
         <Box
-        sx={{
+        sx={(theme) => ({
             maxWidth: 400,
             mx: "auto",
             mt: 5,
             p: 3,
             boxShadow: 3,
             borderRadius: 2,
-            backgroundColor: "white",
-        }}
+            backgroundColor: theme.palette.background.paper,
+            color: theme.palette.text.primary,
+            padding: theme.spacing(2),
+        })}
         >
         <Typography variant="h5" gutterBottom align="center">
             Login

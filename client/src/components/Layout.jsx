@@ -1,11 +1,16 @@
-import { AppBar, Toolbar, Typography, Button, Container } from "@mui/material";
+import { AppBar, Toolbar, Typography, Button, Container, Switch } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useVisibility } from "../contexts/VisibilityContext";
+import { useContext } from "react";
+import { ThemeContext } from "../contexts/ThemeContext";
+import { useTheme } from "@mui/material/styles";
 
 
 const Layout = () => {
     const { visibleButton } = useVisibility();
+    const { isDarkMode, toggleTheme } = useContext(ThemeContext);
+    const theme = useTheme();
     return (
         <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
             {/* AppBar */}
@@ -16,6 +21,7 @@ const Layout = () => {
                             Simplified Jira
                         </Link>
                     </Typography>
+                    <Switch checked={isDarkMode} onChange={toggleTheme} />
                     {(visibleButton === "both" || visibleButton === 'login') && (
                         <Button color="inherit">
                             <Link to="/login" className="white-link">Login</Link>
@@ -39,7 +45,8 @@ const Layout = () => {
             {/* Footer */}
             <footer
                 style={{
-                    backgroundColor: "#f5f5f5",
+                    backgroundColor: theme.palette.background.paper,
+                    color: theme.palette.text.primary,
                     padding: "1rem",
                     textAlign: "center",
                     marginTop: "auto",

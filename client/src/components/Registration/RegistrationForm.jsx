@@ -39,14 +39,16 @@ const RegistrationForm = () => {
 
   return (
     <Box
-      sx={{
+      sx={(theme) => ({
         maxWidth: 400,
         mx: "auto",
         p: 3,
         boxShadow: 3,
         borderRadius: 2,
-        backgroundColor: "white",
-      }}
+        backgroundColor: theme.palette.background.paper,
+        color: theme.palette.text.primary,
+        padding: theme.spacing(2),
+      })}
     >
       <Typography variant="h5" gutterBottom align="center">
         Register

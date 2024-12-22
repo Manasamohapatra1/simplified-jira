@@ -2,6 +2,7 @@ import React from "react";
 import { Box, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
+
 const LandingPage = () => {
   const navigate = useNavigate();
 
@@ -13,16 +14,16 @@ const LandingPage = () => {
 
   return (
     <Box
-      sx={{
+      sx={ (theme) => ({    
         maxWidth: 600,
         mx: "auto",
         mt: 5,
         p: 3,
         boxShadow: 3,
         borderRadius: 2,
-        backgroundColor: "white",
+        backgroundColor: theme.palette.background.paper,
         textAlign: "center",
-      }}
+      })}
     >
       <Typography variant="h4" gutterBottom>
         Welcome to Simplified Jira
