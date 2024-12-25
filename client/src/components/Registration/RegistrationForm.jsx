@@ -43,6 +43,7 @@ const RegistrationForm = () => {
         maxWidth: 400,
         mx: "auto",
         p: 3,
+        mt: 4,
         boxShadow: 3,
         borderRadius: 2,
         backgroundColor: theme.palette.background.paper,

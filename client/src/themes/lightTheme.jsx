@@ -13,6 +13,10 @@ const lightTheme = createTheme({
       default: "#f4f6f8",
       paper: "#ffffff",
     },
+    alternate: {
+      main: "#000000",
+      paper: "#121212",
+    }
   },
   typography: {
     fontFamily: "Roboto, Arial, sans-serif",

@@ -13,6 +13,10 @@ const darkTheme = createTheme({
       default: "#121212",
       paper: "#1e1e1e",
     },
+    alternate: {
+      main: "#ffffff",
+      paper: "#f4f6f8",
+    },
   },
   typography: {
     fontFamily: "Roboto, Arial, sans-serif",

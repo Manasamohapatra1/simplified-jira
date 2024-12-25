@@ -11,6 +11,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useVisibility } from "../../contexts/VisibilityContext";
 import { useEffect, useState } from "react";
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { apiFetch } from "../../api";
 
 
 const LoginForm = () => {
@@ -30,22 +31,21 @@ const LoginForm = () => {
     const onSubmit = async (data) => {
         try {
             console.log("Login Data:", data);
-            const response = await fetch("/api/login", {
+            const response = await apiFetch("auth/login", {
                 method: "POST",
                 headers: {
                 "Content-Type": "application/json",
                 },
                 body: JSON.stringify(data),
         });
-        // should be removed when actual authentication is implemented
-        localStorage.setItem("token", "example_token");
-        navigate("/landingPage");
+        
         if (response.ok) {
             const result = await response.json();
             console.log("Login Successful:", result);
             localStorage.setItem("token", "example_token");
             navigate(from);
             // Redirect to the dashboard or home page
+            navigate("/landingPage");
             
         } else {
             console.error("Login Failed");

@@ -7,6 +7,7 @@ import Layout from './components/Layout';
 import LoginForm from './components/Login/LoginForm';
 import LandingPage from './components/Landing Page/LandingPage';
 import PrivateRoute from './components/PrivateRoute';
+import UserProfile from './components/UserProfile';
 
 
 function App() {
@@ -36,7 +37,8 @@ function App() {
               <Route path="/register" element={<RegistrationForm />} />
               <Route path="/login" element={<LoginForm />} />
               <Route path="/landingPage" element={<PrivateRoute><LandingPage /></PrivateRoute>} />
-              </Route>   
+              <Route path="/profile" element={<PrivateRoute><UserProfile /></PrivateRoute>}/>
+            </Route>   
           </Routes>
       </Router>
     </>
