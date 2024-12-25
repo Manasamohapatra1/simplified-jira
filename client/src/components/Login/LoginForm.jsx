@@ -37,22 +37,20 @@ const LoginForm = () => {
                 "Content-Type": "application/json",
                 },
                 body: JSON.stringify(data),
-        });
+             });
         
-        if (response.ok) {
-            const result = await response.json();
-            console.log("Login Successful:", result);
-            localStorage.setItem("token", "example_token");
-            navigate(from);
-            // Redirect to the dashboard or home page
-            navigate("/landingPage");
-            
-        } else {
-            console.error("Login Failed");
-            setError("Invalid email or password" );      }
+            if (response.ok) {
+                const result = await response.json();
+                console.log("Login Successful:", result);
+                localStorage.setItem("token", result.token);
+                navigate(from);            
+            } else {
+                console.error("Login Failed");
+                setError("Invalid email or password" );      
+            }
         } catch (error) {
-        console.error("Error during login:", error);
-        setError("Something went wrong. Please try again.");
+            console.error("Error during login:", error);
+            setError("Something went wrong. Please try again.");
         }
     };
 

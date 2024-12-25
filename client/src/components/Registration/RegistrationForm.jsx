@@ -12,6 +12,7 @@ import { useVisibility } from "../../contexts/VisibilityContext";
 import { useEffect, useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { apiFetch } from "../../api";
 
 const RegistrationForm = () => {
   const {
@@ -25,16 +26,35 @@ const RegistrationForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
+  const [error, setError] = useState("");
 
   useEffect(() => {
     setVisibleButton("login"); // Show only the Sign Up button
     return () => setVisibleButton("both"); // Reset on unmount
   }, [setVisibleButton]);
 
-  const onSubmit = (data) => {
-    console.log("Registration Data:", data);
-    // Perform API call here
-    navigate("/landingPage");
+  const onSubmit = async (data) => {
+    try {
+      console.log("Registration Data:", data);
+      const response = await apiFetch("auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+  
+      if (response.ok) {
+        const result = await response.json();
+        console.log("Registration Successful:", result);
+        navigate("/login");
+      } else {
+        console.error("Registration Failed");
+        setError("Something went wrong. Please try again." );      }
+    } catch (error) {
+      console.error("Error during registration:", error);
+      setError("Something went wrong. Please try again.");
+    }
   };
 
   return (
@@ -63,7 +83,7 @@ const RegistrationForm = () => {
           }}
         >
           <Controller
-            name="fullName"
+            name="username"
             control={control}
             defaultValue=""
             render={({ field }) => (
@@ -171,6 +191,7 @@ const RegistrationForm = () => {
           <Button type="submit" variant="contained" color="primary" fullWidth>
             Register
           </Button>
+          {error && <Typography color="error">{error}</Typography>}
           <Typography variant="body2" align="center">
             Already have an account? <Link href="/login">Log in</Link>
           </Typography>
