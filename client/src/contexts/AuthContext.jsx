@@ -1,25 +1,30 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import { Navigate } from "react-router-dom";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    // Simulate API call to fetch user data
-    const fetchUser = async () => {
-      const mockUserData = {
-        name: "John Doe",
-        email: "john.doe@example.com",
-      };
-      setUser(mockUserData);
-    };
-
-    fetchUser();
+    // Check for token in localStorage to determine authentication status
+    const token = localStorage.getItem("token");
+    setIsAuthenticated(!!token); // Set true if token exists
   }, []);
 
+  const login = (token) => {
+    localStorage.setItem("token", token);
+    setIsAuthenticated(true);
+  };
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    setIsAuthenticated(false);
+    Navigate("/login");
+  };
+
   return (
-    <AuthContext.Provider value={{ user }}>
+    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

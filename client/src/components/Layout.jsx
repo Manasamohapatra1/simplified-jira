@@ -6,6 +6,7 @@ import { useContext } from "react";
 import { ThemeContext } from "../contexts/ThemeContext";
 import { useTheme } from "@mui/material/styles";
 import { LightMode, DarkMode } from "@mui/icons-material";
+import { useAuth } from "../contexts/AuthContext";
 
 
 
@@ -13,6 +14,7 @@ const Layout = () => {
     const { visibleButton } = useVisibility();
     const { isDarkMode, toggleTheme } = useContext(ThemeContext);
     const theme = useTheme();
+    const { isAuthenticated, logout } = useAuth();
     return (
         <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
             {/* AppBar */}
@@ -26,16 +28,26 @@ const Layout = () => {
                     <IconButton color="alternate" onClick={toggleTheme}>
                         {isDarkMode ? <LightMode /> : <DarkMode />}
                     </IconButton>
-                    {(visibleButton === "both" || visibleButton === 'login') && (
-                        <Button color="inherit">
-                            <Link to="/login" className="white-link">Login</Link>
+
+
+                    {!isAuthenticated ? (<>
+                        {(visibleButton === "both" || visibleButton === 'login') && (
+                            <Button color="inherit">
+                                <Link to="/login" className="white-link">Login</Link>
+                            </Button>
+                        )}
+                        {(visibleButton === "both" || visibleButton === 'signup') && (
+                            <Button color="inherit">
+                                <Link to="/register" className="white-link">Sign Up</Link>
+                            </Button>
+                        )}
+                        </>
+                    ) : (
+                        <Button color="inherit" onClick={logout}>
+                            Logout
                         </Button>
                     )}
-                    {(visibleButton === "both" || visibleButton === 'signup') && (
-                        <Button color="inherit">
-                            <Link to="/register" className="white-link">Sign Up</Link>
-                        </Button>
-                    )}
+                    
                 </Toolbar>
             </AppBar>
 

@@ -7,7 +7,7 @@ import Layout from './components/Layout';
 import LoginForm from './components/Login/LoginForm';
 import LandingPage from './components/Landing Page/LandingPage';
 import PrivateRoute from './components/PrivateRoute';
-import UserProfile from './components/UserProfile';
+import UserProfile from './components/Profile/UserProfile';
 
 
 function App() {
