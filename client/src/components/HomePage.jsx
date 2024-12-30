@@ -4,6 +4,8 @@ import {
     Container,
     Box,
 } from "@mui/material";
+import { Link } from "react-router-dom";
+
 
 const HomePage = () => {
     return (
@@ -30,7 +32,7 @@ const HomePage = () => {
                     }}
                 >
                     <Button variant="contained" color="primary" size="large">
-                        Get Started
+                        <Link to="/projects" className="white-link">Get Started</Link>
                     </Button>
                     <Button variant="outlined" color="primary" size="large">
                         Learn More

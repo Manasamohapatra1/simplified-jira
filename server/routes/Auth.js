@@ -2,7 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
-const verifyToken = require('../middleware/Auth');
+const verifyToken = require('../middleware/VerifyToken');
 
 
 const router = express.Router();
@@ -45,7 +45,7 @@ router.post('/login', async (req, res) => {
       }
   
       // Generate JWT token
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
   
       res.status(200).json({ message: 'Login successful', token });
     } catch (error) {

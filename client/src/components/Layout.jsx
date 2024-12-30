@@ -43,9 +43,14 @@ const Layout = () => {
                         )}
                         </>
                     ) : (
-                        <Button color="inherit" onClick={logout}>
-                            Logout
-                        </Button>
+                        <>
+                            <Button color="inherit" onClick={logout}>
+                                <Link to="/profile" className="white-link">Profile</Link>
+                            </Button>
+                            <Button color="inherit" onClick={logout}>
+                                Logout
+                            </Button>
+                        </>
                     )}
                     
                 </Toolbar>

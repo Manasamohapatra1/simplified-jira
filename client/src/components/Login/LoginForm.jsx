@@ -12,6 +12,7 @@ import { useVisibility } from "../../contexts/VisibilityContext";
 import { useEffect, useState } from "react";
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { apiFetch } from "../../api";
+import { useAuth } from "../../contexts/AuthContext";
 
 
 const LoginForm = () => {
@@ -21,6 +22,7 @@ const LoginForm = () => {
     const [error, setError] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const location = useLocation();
+    const { login } = useAuth();
     const from = location.state?.from?.pathname || "/";
 
     useEffect(() => {
@@ -42,7 +44,7 @@ const LoginForm = () => {
             if (response.ok) {
                 const result = await response.json();
                 console.log("Login Successful:", result);
-                localStorage.setItem("token", result.token);
+                login(result.token);
                 navigate(from);            
             } else {
                 console.error("Login Failed");

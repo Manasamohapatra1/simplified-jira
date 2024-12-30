@@ -8,6 +8,7 @@ import LoginForm from './components/Login/LoginForm';
 import LandingPage from './components/Landing Page/LandingPage';
 import PrivateRoute from './components/PrivateRoute';
 import UserProfile from './components/Profile/UserProfile';
+import ProjectsList from './components/Projects/ProjectsList';
 
 
 function App() {
@@ -38,6 +39,7 @@ function App() {
               <Route path="/login" element={<LoginForm />} />
               <Route path="/landingPage" element={<PrivateRoute><LandingPage /></PrivateRoute>} />
               <Route path="/profile" element={<PrivateRoute><UserProfile /></PrivateRoute>}/>
+              <Route path="/projects" element={<PrivateRoute><ProjectsList /></PrivateRoute>} />
             </Route>   
           </Routes>
       </Router>
