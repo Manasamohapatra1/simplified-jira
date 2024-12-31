@@ -99,6 +99,9 @@ const ProjectsList = () => {
             <Button size="small" onClick={() => handleEdit(project)}>
               Edit
             </Button>
+            <Button variant="contained" onClick={() => navigate(`/projects/${project._id}/issues`)} >
+              View Issues
+            </Button>
             <Button size="small" color="error" onClick={() => handleDelete(project._id)}>
               Delete
             </Button>

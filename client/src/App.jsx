@@ -9,6 +9,8 @@ import LandingPage from './components/Landing Page/LandingPage';
 import PrivateRoute from './components/PrivateRoute';
 import UserProfile from './components/Profile/UserProfile';
 import ProjectsList from './components/Projects/ProjectsList';
+import IssuesList from './components/Issues/IssuesList';
+import IssueDetails from './components/Issues/IssueDetails';
 
 
 function App() {
@@ -40,6 +42,9 @@ function App() {
               <Route path="/landingPage" element={<PrivateRoute><LandingPage /></PrivateRoute>} />
               <Route path="/profile" element={<PrivateRoute><UserProfile /></PrivateRoute>}/>
               <Route path="/projects" element={<PrivateRoute><ProjectsList /></PrivateRoute>} />
+              <Route path="/projects/:projectId/issues" element={<PrivateRoute><IssuesList /></PrivateRoute>} />
+              <Route path="/issues/:issueId" element={<PrivateRoute><IssueDetails /></PrivateRoute>} />
+
             </Route>   
           </Routes>
       </Router>
