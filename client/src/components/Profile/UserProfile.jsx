@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../../api";
 
 const UserProfile = () => {
-
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -17,9 +16,9 @@ const UserProfile = () => {
       if (!token) {
         navigate("/login"); // Redirect if token is missing
         return;
-      } 
+      }
       try {
-        const response = await apiFetch("auth/profile", { 
+        const response = await apiFetch("auth/profile", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`, // Include token in headers
@@ -50,7 +49,7 @@ const UserProfile = () => {
       </Box>
     );
   }
-  
+
   if (error) {
     return (
       <Typography color="error" align="center" sx={{ mt: 4 }}>
@@ -75,7 +74,7 @@ const UserProfile = () => {
         User Profile
       </Typography>
       <Typography variant="body1">
-        <strong>Full Name:</strong> {userInfo.fullName}
+        <strong>Full Name:</strong> {userInfo.username}
       </Typography>
       <Typography variant="body1">
         <strong>Email:</strong> {userInfo.email}
