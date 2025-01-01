@@ -125,6 +125,9 @@ const ProjectsList = () => {
               <Button size="small" onClick={() => handleEdit(project)}>
                 Edit
               </Button>
+              <Button variant="contained" onClick={() => navigate(`/projects/${project._id}/issues`)} >
+                View Issues
+              </Button>
               <Button
                 size="small"
                 color="error"
@@ -141,7 +144,7 @@ const ProjectsList = () => {
               onSubmit={handleFormSubmit}
             />
           )}
-        </Box>
+        </Box>  
       ))}
     </Box>
   );
