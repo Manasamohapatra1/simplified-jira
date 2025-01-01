@@ -1,29 +1,41 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Typography, Card, CardContent, CardActions } from "@mui/material";
+import {
+  Box,
+  Button,
+  Typography,
+  Card,
+  CardContent,
+  CardActions,
+} from "@mui/material";
 import { apiFetch } from "../../api";
 import ProjectForm from "./ProjectForm";
 import { useNavigate } from "react-router-dom";
+
 const ProjectsList = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showForm, setShowForm] = useState(false);
-  const [editProject, setEditProject] = useState(null);
+  const [editingProjectId, setEditingProjectId] = useState(null);
   const navigate = useNavigate();
-
   const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await apiFetch("projects", { 
-            method: "GET",
-            headers: {
-                Authorization: `Bearer ${token}`, // Include token in headers
-            },
+        const response = await apiFetch("projects", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`, // Include token in headers
+          },
         });
         const data = await response.json();
-        setProjects(data);
+
+        // Sort projects by createdAt in descending order
+        const sortedProjects = data.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        );
+
+        setProjects(sortedProjects);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -36,10 +48,10 @@ const ProjectsList = () => {
 
   const handleDelete = async (id) => {
     try {
-      await apiFetch(`projects/${id}`, { 
+      await apiFetch(`projects/${id}`, {
         method: "DELETE",
         headers: {
-            Authorization: `Bearer ${token}`, // Include token in headers
+          Authorization: `Bearer ${token}`, // Include token in headers
         },
       });
       setProjects((prev) => prev.filter((project) => project._id !== id));
@@ -49,24 +61,32 @@ const ProjectsList = () => {
   };
 
   const handleEdit = (project) => {
-    setEditProject(project);
-    setShowForm(true);
+    setEditingProjectId(project._id);
   };
 
   const handleFormClose = () => {
-    setEditProject(null);
-    setShowForm(false);
+    setEditingProjectId(null);
   };
 
-  const handleFormSubmit = (newProject) => {
-    if (editProject) {
-      setProjects((prev) =>
-        prev.map((project) => (project._id === newProject._id ? newProject : project))
+  const handleFormSubmit = (updatedProject) => {
+    setProjects((prevProjects) => {
+      // Check if the project already exists in the list
+      const existingProject = prevProjects.find(
+        (project) => project._id === updatedProject._id
       );
-    } else {
-      setProjects((prev) => [...prev, newProject]);
-    }
-    handleFormClose();
+
+      if (existingProject) {
+        // Update the existing project
+        return prevProjects.map((project) =>
+          project._id === updatedProject._id ? updatedProject : project
+        );
+      } else {
+        // Add the new project to the list
+        return [updatedProject, ...prevProjects];
+      }
+    });
+
+    handleFormClose(); // Close the form after updating or adding
   };
 
   if (loading) {
@@ -74,11 +94,13 @@ const ProjectsList = () => {
   }
 
   if (error) {
-    if(error === "Invalid token") {
-        navigate("/login");
+    if (error === "Invalid token") {
+      navigate("/login");
     }
 
-    return <Typography color="error">Failed to load projects: {error}</Typography>;
+    return (
+      <Typography color="error">Failed to load projects: {error}</Typography>
+    );
   }
 
   return (
@@ -86,35 +108,44 @@ const ProjectsList = () => {
       <Typography variant="h4" gutterBottom>
         My Projects
       </Typography>
-      <Button variant="contained" onClick={() => setShowForm(true)}>
+      <Button variant="contained" onClick={() => setEditingProjectId("new")}>
         Add New Project
       </Button>
-      {projects.map((project) => (
-        <Card key={project._id} sx={{ mt: 2 }}>
-          <CardContent>
-            <Typography variant="h5">{project.name}</Typography>
-            <Typography variant="body2">{project.description}</Typography>
-          </CardContent>
-          <CardActions>
-            <Button size="small" onClick={() => handleEdit(project)}>
-              Edit
-            </Button>
-            <Button variant="contained" onClick={() => navigate(`/projects/${project._id}/issues`)} >
-              View Issues
-            </Button>
-            <Button size="small" color="error" onClick={() => handleDelete(project._id)}>
-              Delete
-            </Button>
-          </CardActions>
-        </Card>
-      ))}
-      {showForm && (
-        <ProjectForm
-          project={editProject}
-          onClose={handleFormClose}
-          onSubmit={handleFormSubmit}
-        />
+      {editingProjectId === "new" && (
+        <ProjectForm onClose={handleFormClose} onSubmit={handleFormSubmit} />
       )}
+      {projects.map((project) => (
+        <Box key={project._id} sx={{ mt: 2 }}>
+          <Card>
+            <CardContent>
+              <Typography variant="h5">{project.name}</Typography>
+              <Typography variant="body2">{project.description}</Typography>
+            </CardContent>
+            <CardActions>
+              <Button size="small" onClick={() => handleEdit(project)}>
+                Edit
+              </Button>
+              <Button variant="contained" onClick={() => navigate(`/projects/${project._id}/issues`)} >
+                View Issues
+              </Button>
+              <Button
+                size="small"
+                color="error"
+                onClick={() => handleDelete(project._id)}
+              >
+                Delete
+              </Button>
+            </CardActions>
+          </Card>
+          {editingProjectId === project._id && (
+            <ProjectForm
+              project={project}
+              onClose={handleFormClose}
+              onSubmit={handleFormSubmit}
+            />
+          )}
+        </Box>  
+      ))}
     </Box>
   );
 };
