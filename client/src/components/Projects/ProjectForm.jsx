@@ -13,9 +13,8 @@ const ProjectForm = ({ project, onClose, onSubmit }) => {
     setLoading(true);
 
     try {
-      const data = project
-        ? 
-        await apiFetch(`projects/${project._id}`, {
+      const response = project
+        ? await apiFetch(`projects/${project._id}`, {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
@@ -31,14 +30,12 @@ const ProjectForm = ({ project, onClose, onSubmit }) => {
             },
             body: JSON.stringify({ name, description }),
           });
-          console.log(data);
-          console.log(JSON.stringify({ name, description }));
+      const data = await response.json();
       onSubmit(data);
     } catch (err) {
       alert(`Failed to save project: ${err.message}`);
     } finally {
       setLoading(false);
-      window.location.reload();
     }
   };
 
@@ -64,7 +61,12 @@ const ProjectForm = ({ project, onClose, onSubmit }) => {
         <Button onClick={onClose} disabled={loading}>
           Cancel
         </Button>
-        <Button type="submit" variant="contained" disabled={loading} sx={{ ml: 2 }}>
+        <Button
+          type="submit"
+          variant="contained"
+          disabled={loading}
+          sx={{ ml: 2 }}
+        >
           {project ? "Update" : "Create"}
         </Button>
       </Box>
