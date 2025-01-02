@@ -17,28 +17,28 @@ const IssueForm = ({ projectId, issue, onClose, onSubmit }) => {
         ? await apiFetch(`issues/${issue._id}`, {
             method: "PUT",
             headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`, // Include token in headers
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(issueData),
           })
         : await apiFetch(`issues/${projectId}`, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`, // Include token in headers
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(issueData),
           });
-
-      onSubmit(savedIssue);
+      const data = await savedIssue.json();
+      onSubmit(data);
     } catch (err) {
       alert(`Failed to save issue: ${err.message}`);
     }
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit}>
+    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
       <TextField
         label="Title"
         value={title}

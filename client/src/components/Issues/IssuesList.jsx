@@ -15,8 +15,7 @@ const IssuesList = () => {
   const [issues, setIssues] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [editIssue, setEditIssue] = useState(null);
-  const [showForm, setShowForm] = useState(false);
+  const [editIssueId, setEditIssueId] = useState(null); // Track the issue being edited
   const navigate = useNavigate();
   const { projectId } = useParams();
 
@@ -33,7 +32,6 @@ const IssuesList = () => {
           },
         });
         const data = await response.json();
-        console.log(data);
         setIssues(data);
       } catch (err) {
         setError(err.message);
@@ -51,7 +49,7 @@ const IssuesList = () => {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Include token in headers
+          Authorization: `Bearer ${token}`,
         },
       });
       setIssues((prev) => prev.filter((issue) => issue._id !== id));
@@ -61,18 +59,14 @@ const IssuesList = () => {
   };
 
   const handleFormSubmit = (newIssue) => {
-    if (editIssue) {
+    if (editIssueId && editIssueId !== "new") {
       setIssues((prev) =>
         prev.map((issue) => (issue._id === newIssue._id ? newIssue : issue))
       );
     } else {
-      setIssues((prev) => {
-        console.log(prev);
-        return [...prev, newIssue];
-      });
+      setIssues((prev) => [newIssue, ...prev]); // Add the new issue at the top
     }
-    setShowForm(false);
-    setEditIssue(null);
+    setEditIssueId(null); // Close the form
   };
 
   if (loading) return <Typography>Loading issues...</Typography>;
@@ -83,52 +77,50 @@ const IssuesList = () => {
       <Typography variant="h4">Issues</Typography>
       <Button
         variant="contained"
-        onClick={() => setShowForm(true)}
+        onClick={() => setEditIssueId("new")}
         sx={{ mb: 2 }}
       >
         Add Issue
       </Button>
-      {(issues || []).map((issue) => (
-          <Card key={issue._id} sx={{ mb: 2 }}>
-            <CardContent>
-              <Typography variant="h6">{issue.title}</Typography>
-              <Typography variant="body2">{issue.description}</Typography>
-              <Typography variant="caption">Type: {issue.type}</Typography>
-            </CardContent>
-            <CardActions>
-              <Button
-                size="small"
-                onClick={() => navigate(`/issues/${issue._id}`)}
-              >
-                View
-              </Button>
-              <Button
-                size="small"
-                onClick={() => {
-                  setEditIssue(issue);
-                  setShowForm(true);
-                }}
-              >
-                Edit
-              </Button>
-              <Button
-                size="small"
-                color="error"
-                onClick={() => handleDelete(issue._id)}
-              >
-                Delete
-              </Button>
-            </CardActions>
-          </Card>
-        ))}
-      {showForm && (
+      {issues.map((issue) => (
+        <Card key={issue._id} sx={{ mb: 2 }}>
+          <CardContent>
+            <Typography variant="h6">{issue.title}</Typography>
+            <Typography variant="body2">{issue.description}</Typography>
+            <Typography variant="caption">Type: {issue.type}</Typography>
+          </CardContent>
+          <CardActions>
+            <Button
+              size="small"
+              onClick={() => navigate(`/issues/${issue._id}`)}
+            >
+              View
+            </Button>
+            <Button size="small" onClick={() => setEditIssueId(issue._id)}>
+              Edit
+            </Button>
+            <Button
+              size="small"
+              color="error"
+              onClick={() => handleDelete(issue._id)}
+            >
+              Delete
+            </Button>
+          </CardActions>
+          {editIssueId === issue._id && (
+            <IssueForm
+              projectId={projectId}
+              issue={issue}
+              onClose={() => setEditIssueId(null)}
+              onSubmit={handleFormSubmit}
+            />
+          )}
+        </Card>
+      ))}
+      {editIssueId === "new" && (
         <IssueForm
           projectId={projectId}
-          issue={editIssue}
-          onClose={() => {
-            setShowForm(false);
-            setEditIssue(null);
-          }}
+          onClose={() => setEditIssueId(null)}
           onSubmit={handleFormSubmit}
         />
       )}
