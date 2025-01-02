@@ -6,16 +6,27 @@ import {
   Card,
   CardContent,
   CardActions,
+  Grid,
+  Tooltip,
+  IconButton,
 } from "@mui/material";
 import { apiFetch } from "../../api";
 import ProjectForm from "./ProjectForm";
 import { useNavigate } from "react-router-dom";
+import ProjectIcon from "@mui/icons-material/Assignment";
+import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import DeleteIcon from "@mui/icons-material/Delete";
+import DnsIcon from "@mui/icons-material/Dns"; // Icon for the new "Issues" button
+import { motion } from "framer-motion";
 
 const ProjectsList = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editingProjectId, setEditingProjectId] = useState(null);
+  const [projectToEdit, setProjectToEdit] = useState(null);
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
@@ -25,12 +36,11 @@ const ProjectsList = () => {
         const response = await apiFetch("projects", {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${token}`, // Include token in headers
+            Authorization: `Bearer ${token}`,
           },
         });
         const data = await response.json();
 
-        // Sort projects by createdAt in descending order
         const sortedProjects = data.sort(
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         );
@@ -51,7 +61,7 @@ const ProjectsList = () => {
       await apiFetch(`projects/${id}`, {
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${token}`, // Include token in headers
+          Authorization: `Bearer ${token}`,
         },
       });
       setProjects((prev) => prev.filter((project) => project._id !== id));
@@ -62,31 +72,30 @@ const ProjectsList = () => {
 
   const handleEdit = (project) => {
     setEditingProjectId(project._id);
+    setProjectToEdit(project);
   };
 
   const handleFormClose = () => {
     setEditingProjectId(null);
+    setProjectToEdit(null);
   };
 
   const handleFormSubmit = (updatedProject) => {
     setProjects((prevProjects) => {
-      // Check if the project already exists in the list
       const existingProject = prevProjects.find(
         (project) => project._id === updatedProject._id
       );
 
       if (existingProject) {
-        // Update the existing project
         return prevProjects.map((project) =>
           project._id === updatedProject._id ? updatedProject : project
         );
       } else {
-        // Add the new project to the list
         return [updatedProject, ...prevProjects];
       }
     });
 
-    handleFormClose(); // Close the form after updating or adding
+    handleFormClose();
   };
 
   if (loading) {
@@ -104,48 +113,181 @@ const ProjectsList = () => {
   }
 
   return (
-    <Box sx={{ maxWidth: 800, mx: "auto", mt: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        My Projects
-      </Typography>
-      <Button variant="contained" onClick={() => setEditingProjectId("new")}>
-        Add New Project
-      </Button>
-      {editingProjectId === "new" && (
-        <ProjectForm onClose={handleFormClose} onSubmit={handleFormSubmit} />
-      )}
-      {projects.map((project) => (
-        <Box key={project._id} sx={{ mt: 2 }}>
-          <Card>
-            <CardContent>
-              <Typography variant="h5">{project.name}</Typography>
-              <Typography variant="body2">{project.description}</Typography>
-            </CardContent>
-            <CardActions>
-              <Button size="small" onClick={() => handleEdit(project)}>
-                Edit
-              </Button>
-              <Button variant="contained" onClick={() => navigate(`/projects/${project._id}/issues`)} >
-                View Issues
-              </Button>
-              <Button
-                size="small"
-                color="error"
-                onClick={() => handleDelete(project._id)}
-              >
-                Delete
-              </Button>
-            </CardActions>
-          </Card>
-          {editingProjectId === project._id && (
+    <Box
+      sx={{
+        maxWidth: 1200,
+        mx: "auto",
+        mt: 4,
+        px: 2,
+        position: "relative",
+      }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 5,
+        }}
+      >
+        <Typography
+          variant="h4"
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            fontWeight: 600,
+          }}
+        >
+          <ProjectIcon sx={{ mr: 1, fontSize: "inherit" }} />
+          My Projects
+        </Typography>
+
+        <Tooltip title="Add New Project" arrow>
+          <Button
+            variant="contained"
+            onClick={() => setEditingProjectId("new")}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              backgroundColor: "#1976d2",
+              "&:hover": {
+                backgroundColor: "#115293",
+              },
+              transition: "transform 0.3s ease",
+            }}
+          >
+            <AddIcon sx={{ mr: 1 }} />
+            Add Project
+          </Button>
+        </Tooltip>
+      </Box>
+
+      {(editingProjectId === "new" || editingProjectId) && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4 }}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            background: "rgba(0, 0, 0, 0.5)",
+            zIndex: 10,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Box
+            sx={{
+              width: "50%",
+              bgcolor: "white",
+              p: 3,
+              borderRadius: 2,
+              boxShadow: 4,
+            }}
+          >
             <ProjectForm
-              project={project}
               onClose={handleFormClose}
               onSubmit={handleFormSubmit}
+              project={projectToEdit}
             />
-          )}
-        </Box>  
-      ))}
+          </Box>
+        </motion.div>
+      )}
+
+      <Grid container spacing={3}>
+        {projects.map((project) => (
+          <Grid item xs={12} sm={6} md={4} key={project._id}>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4 }}
+            >
+              <Card
+                sx={{
+                  position: "relative",
+                  borderRadius: 2,
+                  boxShadow: 2,
+                  height: "10vw", // Fixed height for uniform size
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  overflow: "hidden",
+                  transition: "transform 0.3s ease",
+                  "&:hover": {
+                    transform: "scale(1.03)",
+                  },
+                }}
+              >
+                <IconButton
+                  sx={{
+                    position: "absolute",
+                    top: 8,
+                    right: 8,
+                    color: "red",
+                    backgroundColor: "white",
+                    "&:hover": {
+                      backgroundColor: "#ffcccb",
+                    },
+                  }}
+                  onClick={() => handleDelete(project._id)}
+                >
+                  <DeleteIcon />
+                </IconButton>
+
+                <CardContent sx={{ overflow: "hidden" }}>
+                  <Typography variant="h5" noWrap sx={{ fontWeight: 500 }}>
+                    {project.name}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      opacity: 0.7,
+                      textOverflow: "ellipsis",
+                      overflow: "hidden",
+                      whiteSpace: "wrap",
+                    }}
+                  >
+                    {project.description}
+                  </Typography>
+                </CardContent>
+
+                <CardActions
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-evenly",
+                    mt: "auto",
+                  }}
+                >
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={() => handleEdit(project)}
+                  >
+                    <EditIcon sx={{ mr: 1 }} />
+                    Edit
+                  </Button>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    onClick={() => navigate(`/projects/${project._id}/issues`)}
+                  >
+                    <VisibilityIcon sx={{ mr: 1 }} />
+                    View
+                  </Button>
+                  <Button size="small" variant="outlined" color="secondary">
+                    <DnsIcon sx={{ mr: 1 }} />
+                    Issues
+                  </Button>
+                </CardActions>
+              </Card>
+            </motion.div>
+          </Grid>
+        ))}
+      </Grid>
     </Box>
   );
 };

@@ -48,11 +48,13 @@ exports.updateProject = async (req, res) => {
     console.log(project);
 
     if (!project || project.ownerId.toString() !== req.user.id) {
-      return res.status(404).json({ message: "Project not found or unauthorized" });
+      return res
+        .status(404)
+        .json({ message: "Project not found or unauthorized" });
     }
 
     project.name = name || project.name;
-    project.description = description || project.description;
+    project.description = description;
     await project.save();
 
     res.status(200).json(project);
@@ -68,7 +70,9 @@ exports.deleteProject = async (req, res) => {
     const project = await Project.findById(req.params.id);
 
     if (!project || project.ownerId.toString() !== req.user.id) {
-      return res.status(404).json({ message: "Project not found or unauthorized" });
+      return res
+        .status(404)
+        .json({ message: "Project not found or unauthorized" });
     }
 
     await Project.findByIdAndDelete(req.params.id);
