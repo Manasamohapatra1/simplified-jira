@@ -10,7 +10,7 @@ import {
   Tooltip,
   IconButton,
 } from "@mui/material";
-import { apiFetch } from "../../api";
+import { apiFetch } from "../../api/apiUtility";
 import ProjectForm from "./ProjectForm";
 import { useNavigate } from "react-router-dom";
 import ProjectIcon from "@mui/icons-material/Assignment";

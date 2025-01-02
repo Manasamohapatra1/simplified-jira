@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Box, TextField, Select, MenuItem, Button } from "@mui/material";
-import { apiFetch } from "../../api";
+import { apiFetch } from "../../api/apiUtility";
 
 const IssueForm = ({ projectId, issue, onClose, onSubmit }) => {
   const [title, setTitle] = useState(issue?.title || "");

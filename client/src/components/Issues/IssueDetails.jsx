@@ -7,7 +7,7 @@ import {
   List,
   ListItem,
 } from "@mui/material";
-import { apiFetch } from "../../api";
+import { apiFetch } from "../../api/apiUtility";
 import { useParams } from "react-router-dom";
 
 const IssueDetails = () => {
