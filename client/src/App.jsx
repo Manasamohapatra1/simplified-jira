@@ -14,22 +14,6 @@ import IssueDetails from './components/Issues/IssueDetails';
 
 
 function App() {
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-          const response = await fetch("/api/");
-          if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          const data = await response.json();
-          console.log(data);
-      } catch (error) {
-          console.error("Error fetching data from the backend:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   return (
     <>
