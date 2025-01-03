@@ -9,6 +9,7 @@ import {
   Grid,
   Tooltip,
   IconButton,
+  SvgIcon,
 } from "@mui/material";
 import { apiFetch } from "../../api/apiUtility";
 import ProjectForm from "./ProjectForm";
@@ -18,8 +19,17 @@ import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
-import DnsIcon from "@mui/icons-material/Dns"; // Icon for the new "Issues" button
+import DnsIcon from "@mui/icons-material/Dns";
 import { motion } from "framer-motion";
+
+// Placeholder SVG Icon
+function PlaceholderIcon(props) {
+  return (
+    <SvgIcon {...props}>
+      <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14H7v-2h3v2zm0-4H7v-2h3v2zm5 4h-3v-2h3v2zm0-4h-3v-2h3v2zm3-7H6V6h12v2z" />
+    </SvgIcon>
+  );
+}
 
 const ProjectsList = () => {
   const [projects, setProjects] = useState([]);
@@ -142,24 +152,26 @@ const ProjectsList = () => {
           My Projects
         </Typography>
 
-        <Tooltip title="Add New Project" arrow>
-          <Button
-            variant="contained"
-            onClick={() => setEditingProjectId("new")}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              backgroundColor: "#1976d2",
-              "&:hover": {
-                backgroundColor: "#115293",
-              },
-              transition: "transform 0.3s ease",
-            }}
-          >
-            <AddIcon sx={{ mr: 1 }} />
-            Add Project
-          </Button>
-        </Tooltip>
+        {projects.length > 0 && (
+          <Tooltip title="Add New Project" arrow>
+            <Button
+              variant="contained"
+              onClick={() => setEditingProjectId("new")}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                backgroundColor: "#1976d2",
+                "&:hover": {
+                  backgroundColor: "#115293",
+                },
+                transition: "transform 0.3s ease",
+              }}
+            >
+              <AddIcon sx={{ mr: 1 }} />
+              Add Project
+            </Button>
+          </Tooltip>
+        )}
       </Box>
 
       {(editingProjectId === "new" || editingProjectId) && (
@@ -198,96 +210,131 @@ const ProjectsList = () => {
         </motion.div>
       )}
 
-      <Grid container spacing={3}>
-        {projects.map((project) => (
-          <Grid item xs={12} sm={6} md={4} key={project._id}>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4 }}
-            >
-              <Card
-                sx={{
-                  position: "relative",
-                  borderRadius: 2,
-                  boxShadow: 2,
-                  height: "10vw", // Fixed height for uniform size
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  overflow: "hidden",
-                  transition: "transform 0.3s ease",
-                  "&:hover": {
-                    transform: "scale(1.03)",
-                  },
-                }}
+      {projects.length === 0 ? (
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "60vh",
+            textAlign: "center",
+          }}
+        >
+          <PlaceholderIcon sx={{ fontSize: 120, color: "#1976d2" }} />
+          <Typography variant="h6" color="text.secondary" sx={{ mt: 2 }}>
+            Add projects to your workspace
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => setEditingProjectId("new")}
+            sx={{
+              mt: 2,
+              px: 4,
+              py: 1,
+              fontSize: "16px",
+            }}
+          >
+            <AddIcon sx={{ mr: 1 }} />
+            Add Project
+          </Button>
+        </Box>
+      ) : (
+        <Grid container spacing={3}>
+          {projects.map((project) => (
+            <Grid item xs={12} sm={6} md={4} key={project._id}>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4 }}
               >
-                <IconButton
+                <Card
                   sx={{
-                    position: "absolute",
-                    top: 8,
-                    right: 8,
-                    color: "red",
-                    backgroundColor: "white",
+                    position: "relative",
+                    borderRadius: 2,
+                    boxShadow: 2,
+                    height: "10vw",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    overflow: "hidden",
+                    transition: "transform 0.3s ease",
                     "&:hover": {
-                      backgroundColor: "#ffcccb",
+                      transform: "scale(1.03)",
                     },
                   }}
-                  onClick={() => handleDelete(project._id)}
                 >
-                  <DeleteIcon />
-                </IconButton>
-
-                <CardContent sx={{ overflow: "hidden" }}>
-                  <Typography variant="h5" noWrap sx={{ fontWeight: 500 }}>
-                    {project.name}
-                  </Typography>
-                  <Typography
-                    variant="body2"
+                  <IconButton
                     sx={{
-                      opacity: 0.7,
-                      textOverflow: "ellipsis",
-                      overflow: "hidden",
-                      whiteSpace: "wrap",
+                      position: "absolute",
+                      top: 8,
+                      right: 8,
+                      color: "red",
+                      backgroundColor: "white",
+                      "&:hover": {
+                        backgroundColor: "#ffcccb",
+                      },
+                    }}
+                    onClick={() => handleDelete(project._id)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+
+                  <CardContent sx={{ overflow: "hidden" }}>
+                    <Typography variant="h5" noWrap sx={{ fontWeight: 500 }}>
+                      {project.name}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        opacity: 0.7,
+                        textOverflow: "ellipsis",
+                        overflow: "hidden",
+                        whiteSpace: "wrap",
+                      }}
+                    >
+                      {project.description}
+                    </Typography>
+                  </CardContent>
+
+                  <CardActions
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-evenly",
+                      mt: "auto",
                     }}
                   >
-                    {project.description}
-                  </Typography>
-                </CardContent>
-
-                <CardActions
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-evenly",
-                    mt: "auto",
-                  }}
-                >
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    onClick={() => handleEdit(project)}
-                  >
-                    <EditIcon sx={{ mr: 1 }} />
-                    Edit
-                  </Button>
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    onClick={() => navigate(`/projects/${project._id}/issues`)}
-                  >
-                    <VisibilityIcon sx={{ mr: 1 }} />
-                    View
-                  </Button>
-                  <Button size="small" variant="outlined" color="secondary">
-                    <DnsIcon sx={{ mr: 1 }} />
-                    Issues
-                  </Button>
-                </CardActions>
-              </Card>
-            </motion.div>
-          </Grid>
-        ))}
-      </Grid>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={() => handleEdit(project)}
+                    >
+                      <EditIcon sx={{ mr: 1 }} />
+                      Edit
+                    </Button>
+                    <Button size="small" variant="outlined">
+                      <VisibilityIcon sx={{ mr: 1 }} />
+                      View
+                    </Button>
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      color="secondary"
+                      onClick={() =>
+                        navigate(`/projects/${project._id}/issues`)
+                      }
+                    >
+                      <DnsIcon sx={{ mr: 1 }} />
+                      Issues
+                    </Button>
+                  </CardActions>
+                </Card>
+              </motion.div>
+            </Grid>
+          ))}
+        </Grid>
+      )}
     </Box>
   );
 };

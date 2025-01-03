@@ -62,7 +62,7 @@ const Layout = () => {
               </Button>
               <Button color="inherit">
                 <Link to="/projects" className="white-link">
-                  Project
+                  Projects
                 </Link>
               </Button>
               <Button color="inherit" onClick={logout}>
