@@ -23,6 +23,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import { motion } from "framer-motion";
+import PostAddIcon from "@mui/icons-material/PostAdd";
 
 const IssuesList = () => {
   const [issues, setIssues] = useState([]);
@@ -130,179 +131,176 @@ const IssuesList = () => {
         px: 2,
       }}
     >
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 4,
-        }}
-      >
-        <Typography variant="h4">Issues</Typography>
-        <Tooltip title="Add New Issue" arrow>
-          <motion.div
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            style={{ display: "inline-block" }}
-          >
-            <Button
-              variant="contained"
-              onClick={() => setEditIssueId("new")}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                backgroundColor: "#1976d2",
-                "&:hover": {
-                  backgroundColor: "#115293",
-                },
-              }}
-            >
-              <AddIcon sx={{ mr: 1 }} />
-              Add Issue
-            </Button>
-          </motion.div>
-        </Tooltip>
-      </Box>
-
-      <Grid container spacing={2}>
-        {issues.map((issue) => (
-          <Grid item xs={12} key={issue._id}>
+      {issues.length > 0 && (
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 4,
+          }}
+        >
+          <Typography variant="h4">Issues</Typography>
+          <Tooltip title="Add New Issue" arrow>
             <motion.div
-              whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.3 }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              style={{ display: "inline-block" }}
             >
-              <Card
+              <Button
+                variant="contained"
+                onClick={() => setEditIssueId("new")}
                 sx={{
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "space-between",
-                  p: 2,
-                  boxShadow: 4,
-                  borderRadius: 2,
-                  transition: "box-shadow 0.3s ease",
+                  backgroundColor: "#1976d2",
                   "&:hover": {
-                    boxShadow: 6,
+                    backgroundColor: "#115293",
                   },
                 }}
               >
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    mr: 2,
-                  }}
-                >
-                  {getIconByType(issue.type)}
-                </Box>
+                <AddIcon sx={{ mr: 1 }} />
+                Add Issue
+              </Button>
+            </motion.div>
+          </Tooltip>
+        </Box>
+      )}
 
-                <Box
+      {issues.length === 0 ? (
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "60vh",
+            textAlign: "center",
+          }}
+        >
+          <PostAddIcon sx={{ fontSize: 120, color: "#1976d2" }} />
+          <Typography variant="h6" color="text.secondary" sx={{ mt: 2 }}>
+            Add issues to your workspace
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => setEditIssueId("new")}
+            sx={{
+              mt: 2,
+              px: 4,
+              py: 1,
+              fontSize: "16px",
+            }}
+          >
+            <AddIcon sx={{ mr: 1 }} />
+            Add Issue
+          </Button>
+        </Box>
+      ) : (
+        <Grid container spacing={2}>
+          {issues.map((issue) => (
+            <Grid item xs={12} key={issue._id}>
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Card
                   sx={{
-                    flex: 1,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
+                    p: 2,
+                    boxShadow: 4,
+                    borderRadius: 2,
+                    transition: "box-shadow 0.3s ease",
+                    "&:hover": {
+                      boxShadow: 6,
+                    },
                   }}
                 >
-                  <Typography
-                    variant="h6"
-                    noWrap
+                  <Box
                     sx={{
-                      maxWidth: "70%",
-                      textOverflow: "ellipsis",
+                      display: "flex",
+                      alignItems: "center",
+                      mr: 2,
                     }}
                   >
-                    {issue.title}
-                  </Typography>
-                  <Tooltip title="Edit Issue">
-                    <IconButton onClick={() => setEditIssueId(issue._id)}>
-                      <EditIcon />
-                    </IconButton>
-                  </Tooltip>
-                </Box>
+                    {getIconByType(issue.type)}
+                  </Box>
 
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 2,
-                  }}
-                >
-                  <FormControl size="small">
-                    <Select
-                      value={issue.status}
-                      onChange={(e) =>
-                        handleStatusChange(issue._id, e.target.value)
-                      }
+                  <Box
+                    sx={{
+                      flex: 1,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Typography
+                      variant="h6"
+                      noWrap
                       sx={{
-                        minWidth: 120,
-                        "& .MuiSelect-select": {
-                          color: getStatusColor(issue.status),
-                        },
+                        maxWidth: "70%",
+                        textOverflow: "ellipsis",
                       }}
                     >
-                      <MenuItem value="To Do">To Do</MenuItem>
-                      <MenuItem value="In Progress">In Progress</MenuItem>
-                      <MenuItem value="Done">Done</MenuItem>
-                    </Select>
-                  </FormControl>
-                  <Button
-                    variant="outlined"
-                    onClick={() => navigate(`/issues/${issue._id}`)}
-                  >
-                    <VisibilityIcon sx={{ mr: 1 }} />
-                    View
-                  </Button>
-                  <Tooltip title="Delete Issue">
-                    <IconButton
-                      color="error"
-                      onClick={() => handleDelete(issue._id)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </Tooltip>
-                </Box>
-              </Card>
-            </motion.div>
+                      {issue.title}
+                    </Typography>
+                    <Tooltip title="Edit Issue">
+                      <IconButton onClick={() => setEditIssueId(issue._id)}>
+                        <EditIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
 
-            {editIssueId === issue._id && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.4 }}
-                style={{
-                  position: "fixed",
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  height: "100%",
-                  background: "rgba(0, 0, 0, 0.5)",
-                  zIndex: 10,
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Box
-                  sx={{
-                    width: "50%",
-                    bgcolor: "white",
-                    p: 3,
-                    borderRadius: 2,
-                    boxShadow: 4,
-                  }}
-                >
-                  <IssueForm
-                    projectId={projectId}
-                    issue={issue}
-                    onClose={() => setEditIssueId(null)}
-                    onSubmit={handleFormSubmit}
-                  />
-                </Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 2,
+                    }}
+                  >
+                    <FormControl size="small">
+                      <Select
+                        value={issue.status}
+                        onChange={(e) =>
+                          handleStatusChange(issue._id, e.target.value)
+                        }
+                        sx={{
+                          minWidth: 120,
+                          "& .MuiSelect-select": {
+                            color: getStatusColor(issue.status),
+                          },
+                        }}
+                      >
+                        <MenuItem value="To Do">To Do</MenuItem>
+                        <MenuItem value="In Progress">In Progress</MenuItem>
+                        <MenuItem value="Done">Done</MenuItem>
+                      </Select>
+                    </FormControl>
+                    <Button
+                      variant="outlined"
+                      onClick={() => navigate(`/issues/${issue._id}`)}
+                    >
+                      <VisibilityIcon sx={{ mr: 1 }} />
+                      View
+                    </Button>
+                    <Tooltip title="Delete Issue">
+                      <IconButton
+                        color="error"
+                        onClick={() => handleDelete(issue._id)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                </Card>
               </motion.div>
-            )}
-          </Grid>
-        ))}
-      </Grid>
+            </Grid>
+          ))}
+        </Grid>
+      )}
 
       {editIssueId === "new" && (
         <motion.div
