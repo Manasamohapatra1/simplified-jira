@@ -19,6 +19,7 @@ const ProjectDetails = () => {
   const [error, setError] = useState(null);
   const [editingProjectId, setEditingProjectId] = useState(null);
   const [projectToEdit, setProjectToEdit] = useState(null);
+  const [userRole, setUserRole] = useState(null); // Store the user's role
   const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
@@ -37,6 +38,13 @@ const ProjectDetails = () => {
         });
         const data = await response.json();
         setProject(data);
+        // Determine the user's role
+        if (data.ownerId.email === email) {
+          setUserRole("Owner");
+        } else {
+          const member = data.members.find((m) => m.userId.email === email);
+          setUserRole(member?.role || "Contributor");
+        }
       } catch (err) {
         setError(err.message);
       } finally {
@@ -204,10 +212,11 @@ const ProjectDetails = () => {
       <Paper sx={{ flex: 1, padding: 2, height: "100%", overflowY: "auto" }}>
         <ProjectMembersList
           members={project.members}
+          userRole={userRole}
           onRemoveMember={handleRemoveMember}
           onUpdateRole={handleUpdateRole}
         />
-        <AddMemberForm onAddMember={handleAddMember} />
+        <AddMemberForm userRole={userRole} onAddMember={handleAddMember} />
       </Paper>
     </Box>
   );

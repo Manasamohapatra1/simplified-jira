@@ -71,10 +71,18 @@ exports.updateProject = async (req, res) => {
     const project = await Project.findById(req.params.id);
     console.log(project);
 
-    if (!project || project.ownerId.toString() !== req.user.id) {
+    if (!project) {
       return res
         .status(404)
-        .json({ message: "Project not found or unauthorized" });
+        .json({ message: "Project not found"});
+    }
+
+    const loggedInUserRole = project.ownerId.toString() === req.user.id
+      ? "Owner"
+      : project.members.find((member) => member.userId._id.toString() === req.user.id)?.role;
+
+    if (!["Owner", "Admin"].includes(loggedInUserRole)) {
+      return res.status(403).json({ message: "You do not have permission to edit this project" });
     }
 
     project.name = name || project.name;
@@ -124,8 +132,11 @@ exports.addMember = async (req, res) => {
       return res.status(404).json({ message: "Project not found" });
     }
 
-    // Only the owner can add members
-    if (project.ownerId.toString() !== req.user.id) {
+    const loggedInUserRole = project.ownerId.toString() === req.user.id
+      ? "Owner"
+      : project.members.find((member) => member.userId._id.toString() === req.user.id)?.role;
+
+    if (!["Owner", "Admin"].includes(loggedInUserRole)) {
       return res.status(403).json({ message: "You do not have permission to add members" });
     }
 
@@ -174,9 +185,12 @@ exports.removeMember = async (req, res) => {
       return res.status(404).json({ message: "Project not found" });
     }
 
-    // Only the owner can remove members
-    if (project.ownerId.toString() !== req.user.id) {
-      return res.status(403).json({ message: "You do not have permission to remove members" });
+    const loggedInUserRole = project.ownerId.toString() === req.user.id
+      ? "Owner"
+      : project.members.find((member) => member.userId._id.toString() === req.user.id)?.role;
+
+    if (!["Owner", "Admin"].includes(loggedInUserRole)) {
+      return res.status(403).json({ message: "You do not have permission to add members" });
     }
 
     project.members = project.members.filter((member) => member.userId.toString() !== memberId);
@@ -208,8 +222,12 @@ exports.updateMemberRole = async (req, res) => {
     }
 
     // Only the owner can update roles
-    if (project.ownerId.toString() !== req.user.id) {
-      return res.status(403).json({ message: "You do not have permission to update roles" });
+    const loggedInUserRole = project.ownerId.toString() === req.user.id
+      ? "Owner"
+      : project.members.find((member) => member.userId._id.toString() === req.user.id)?.role;
+
+    if (!["Owner", "Admin"].includes(loggedInUserRole)) {
+      return res.status(403).json({ message: "You do not have permission to add members" });
     }
 
     const member = project.members.find((m) => m.userId.toString() === memberId);

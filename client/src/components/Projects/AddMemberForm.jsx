@@ -1,13 +1,19 @@
 import React, { useState } from "react";
 import { TextField, Button } from "@mui/material";
 
-const AddMemberForm = ({ onAddMember }) => {
+const AddMemberForm = ({ onAddMember, userRole }) => {
   const [email, setEmail] = useState("");
 
   const handleSubmit = () => {
     onAddMember(email);
     setEmail("");
   };
+  console.log(userRole);
+  console.log(["Owner", "Admin"].includes(userRole));
+
+  if(!(["Owner", "Admin"].includes(userRole))){
+    return <></>;
+  }
 
   return (
     <div>

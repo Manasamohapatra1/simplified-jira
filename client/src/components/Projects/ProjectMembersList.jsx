@@ -1,6 +1,18 @@
-import { Typography, List, ListItem, ListItemText, Button } from "@mui/material";
+import {
+  Typography,
+  List,
+  ListItem,
+  ListItemText,
+  Button,
+} from "@mui/material";
 
-const ProjectMembersList = ({ members, onAddMember, onRemoveMember, onUpdateRole }) => {
+const ProjectMembersList = ({
+  members,
+  userRole,
+  onAddMember,
+  onRemoveMember,
+  onUpdateRole,
+}) => {
   return (
     <div>
       <Typography variant="h6">Members</Typography>
@@ -11,10 +23,28 @@ const ProjectMembersList = ({ members, onAddMember, onRemoveMember, onUpdateRole
               primary={`${member.userId.username} (${member.role})`}
               secondary={member.userId.email}
             />
-            {member.role !== "Admin" && (<Button onClick={() => onUpdateRole(member.userId._id, "Admin")}>Make Admin</Button>)}
-            <Button color="error" onClick={() => onRemoveMember(member.userId._id)}>
-              Remove
-            </Button>
+            {["Owner", "Admin"].includes(userRole) && (
+              <>
+              {member.role === "Admin"? (
+                <Button
+                onClick={() => onUpdateRole(member.userId._id, "Contributor")}
+              >
+                Remove Admin
+              </Button>
+              ) :
+                (<Button
+                  onClick={() => onUpdateRole(member.userId._id, "Admin")}
+                >
+                  Make Admin
+                </Button>)}
+                <Button
+                  color="error"
+                  onClick={() => onRemoveMember(member.userId._id)}
+                >
+                  Remove
+                </Button>
+              </>
+            )}
           </ListItem>
         ))}
       </List>
