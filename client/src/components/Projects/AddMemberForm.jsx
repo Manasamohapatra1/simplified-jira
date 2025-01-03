@@ -11,7 +11,7 @@ const AddMemberForm = ({ onAddMember, userRole }) => {
   console.log(userRole);
   console.log(["Owner", "Admin"].includes(userRole));
 
-  if(!(["Owner", "Admin"].includes(userRole))){
+  if (!["Owner", "Admin"].includes(userRole)) {
     return <></>;
   }
 

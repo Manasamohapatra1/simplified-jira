@@ -25,18 +25,21 @@ const ProjectMembersList = ({
             />
             {["Owner", "Admin"].includes(userRole) && (
               <>
-              {member.role === "Admin"? (
-                <Button
-                onClick={() => onUpdateRole(member.userId._id, "Contributor")}
-              >
-                Remove Admin
-              </Button>
-              ) :
-                (<Button
-                  onClick={() => onUpdateRole(member.userId._id, "Admin")}
-                >
-                  Make Admin
-                </Button>)}
+                {member.role === "Admin" ? (
+                  <Button
+                    onClick={() =>
+                      onUpdateRole(member.userId._id, "Contributor")
+                    }
+                  >
+                    Remove Admin
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => onUpdateRole(member.userId._id, "Admin")}
+                  >
+                    Make Admin
+                  </Button>
+                )}
                 <Button
                   color="error"
                   onClick={() => onRemoveMember(member.userId._id)}

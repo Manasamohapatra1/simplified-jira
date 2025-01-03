@@ -43,14 +43,15 @@ const RegistrationForm = () => {
         },
         body: JSON.stringify(data),
       });
-  
+
       if (response.ok) {
         const result = await response.json();
         console.log("Registration Successful:", result);
         navigate("/login");
       } else {
         console.error("Registration Failed");
-        setError("Something went wrong. Please try again." );      }
+        setError("Something went wrong. Please try again.");
+      }
     } catch (error) {
       console.error("Error during registration:", error);
       setError("Something went wrong. Please try again.");

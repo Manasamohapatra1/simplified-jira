@@ -267,21 +267,22 @@ const ProjectsList = () => {
                   }}
                 >
                   {project.ownerId.email === email && (
-                  <IconButton
-                    sx={{
-                      position: "absolute",
-                      top: 8,
-                      right: 8,
-                      color: "red",
-                      backgroundColor: "white",
-                      "&:hover": {
-                        backgroundColor: "#ffcccb",
-                      },
-                    }}
-                    onClick={() => handleDelete(project._id)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>)}
+                    <IconButton
+                      sx={{
+                        position: "absolute",
+                        top: 8,
+                        right: 8,
+                        color: "red",
+                        backgroundColor: "white",
+                        "&:hover": {
+                          backgroundColor: "#ffcccb",
+                        },
+                      }}
+                      onClick={() => handleDelete(project._id)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  )}
 
                   <CardContent sx={{ overflow: "hidden" }}>
                     <Typography variant="h5" noWrap sx={{ fontWeight: 500 }}>
@@ -302,7 +303,8 @@ const ProjectsList = () => {
                       Role:{" "}
                       {project.ownerId.email === email
                         ? "Owner"
-                        : project.members.find((m) => m.userId.email === email).role}
+                        : project.members.find((m) => m.userId.email === email)
+                            .role}
                     </Typography>
                   </CardContent>
 
@@ -313,15 +315,16 @@ const ProjectsList = () => {
                       mt: "auto",
                     }}
                   >
-                    {project.ownerId.email === email &&
-                    (<Button
-                      size="small"
-                      variant="outlined"
-                      onClick={() => handleEdit(project)}
-                    >
-                      <EditIcon sx={{ mr: 1 }} />
-                      Edit
-                    </Button>)}
+                    {project.ownerId.email === email && (
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        onClick={() => handleEdit(project)}
+                      >
+                        <EditIcon sx={{ mr: 1 }} />
+                        Edit
+                      </Button>
+                    )}
                     <Button
                       size="small"
                       variant="outlined"

@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  Box,
-  Button,
-  Typography,
-  Paper,
-} from "@mui/material";
+import { Box, Button, Typography, Paper } from "@mui/material";
 import { apiFetch } from "../../api/apiUtility";
 import AddMemberForm from "./AddMemberForm";
 import ProjectMembersList from "./ProjectMembersList";
@@ -29,12 +24,12 @@ const ProjectDetails = () => {
   useEffect(() => {
     const fetchProject = async () => {
       try {
-        const response = await apiFetch(`projects/${projectId}`, { 
+        const response = await apiFetch(`projects/${projectId}`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
-          }
+          },
         });
         const data = await response.json();
         setProject(data);
@@ -57,12 +52,12 @@ const ProjectDetails = () => {
 
   const handleDelete = async () => {
     try {
-      await apiFetch(`projects/${projectId}`, { 
+      await apiFetch(`projects/${projectId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
-        }
+        },
       });
       navigate("/projects"); // Redirect to projects list after deletion
     } catch (err) {
@@ -89,7 +84,7 @@ const ProjectDetails = () => {
     try {
       const response = await apiFetch(`projects/${projectId}/members`, {
         method: "POST",
-        headers: {  
+        headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
@@ -104,13 +99,16 @@ const ProjectDetails = () => {
 
   const handleRemoveMember = async (memberId) => {
     try {
-      const response = await apiFetch(`projects/${projectId}/members/${memberId}`, {
-        method: "DELETE",
-        headers: {  
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await apiFetch(
+        `projects/${projectId}/members/${memberId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
       const data = await response.json();
       setProject(data); // Update project after removing member
     } catch (err) {
@@ -120,63 +118,64 @@ const ProjectDetails = () => {
 
   const handleUpdateRole = async (memberId, role) => {
     try {
-      const response = await apiFetch(`projects/${projectId}/members/${memberId}`, {
-        method: "PUT",
-        headers: {  
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ role }),
-      });
-      const data  = await response.json();
+      const response = await apiFetch(
+        `projects/${projectId}/members/${memberId}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ role }),
+        }
+      );
+      const data = await response.json();
       setProject(data); // Update project with updated role
     } catch (err) {
       alert(`Failed to update role: ${err.message}`);
     }
   };
 
-
   if (loading) return <Typography>Loading project details...</Typography>;
   if (error) return <Typography color="error">{error}</Typography>;
 
   return (
     <Box sx={{ display: "flex", gap: 4 }}>
-
-      {(editingProjectId) && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.4 }}
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              background: "rgba(0, 0, 0, 0.5)",
-              zIndex: 10,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
+      {editingProjectId && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4 }}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            background: "rgba(0, 0, 0, 0.5)",
+            zIndex: 10,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Box
+            sx={{
+              width: "50%",
+              bgcolor: "white",
+              p: 3,
+              borderRadius: 2,
+              boxShadow: 4,
             }}
           >
-            <Box
-              sx={{
-                width: "50%",
-                bgcolor: "white",
-                p: 3,
-                borderRadius: 2,
-                boxShadow: 4,
-              }}
-            >
-              <ProjectForm
-                onClose={handleFormClose}
-                onSubmit={handleFormSubmit}
-                project={projectToEdit}
-              />
-            </Box>
-          </motion.div>
-        )}
+            <ProjectForm
+              onClose={handleFormClose}
+              onSubmit={handleFormSubmit}
+              project={projectToEdit}
+            />
+          </Box>
+        </motion.div>
+      )}
       {/* Left Content: Project Details */}
       <Box sx={{ flex: 3 }}>
         <Typography variant="h4" gutterBottom>
@@ -187,17 +186,18 @@ const ProjectDetails = () => {
         </Typography>
         {project.ownerId.email === email && (
           <>
-          <Button
-            variant="contained"
-            sx={{ mr: 2 }}
-            onClick={() => handleEdit(project)}
-          >
-            Edit Project
-          </Button>
-          <Button variant="outlined" color="error" onClick={handleDelete}>
-            Delete Project
-          </Button>     
-        </>)}
+            <Button
+              variant="contained"
+              sx={{ mr: 2 }}
+              onClick={() => handleEdit(project)}
+            >
+              Edit Project
+            </Button>
+            <Button variant="outlined" color="error" onClick={handleDelete}>
+              Delete Project
+            </Button>
+          </>
+        )}
         <Button
           variant="contained"
           color="primary"
