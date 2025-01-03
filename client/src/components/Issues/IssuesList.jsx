@@ -11,7 +11,7 @@ import {
   MenuItem,
   FormControl,
 } from "@mui/material";
-import { apiFetch } from "../../api";
+import { apiFetch } from "../../api/apiUtility";
 import IssueForm from "./IssueForm";
 import { useNavigate, useParams } from "react-router-dom";
 import BugReportIcon from "@mui/icons-material/BugReport";

@@ -12,7 +12,7 @@ import { useVisibility } from "../../contexts/VisibilityContext";
 import { useEffect, useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { apiFetch } from "../../api";
+import { apiFetch } from "../../api/apiUtility";
 
 const RegistrationForm = () => {
   const {

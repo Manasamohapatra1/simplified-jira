@@ -11,7 +11,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useVisibility } from "../../contexts/VisibilityContext";
 import { useEffect, useState } from "react";
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { apiFetch } from "../../api";
+import { apiFetch } from "../../api/apiUtility";
 import { useAuth } from "../../contexts/AuthContext";
 
 
