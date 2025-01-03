@@ -313,7 +313,11 @@ const ProjectsList = () => {
                       <EditIcon sx={{ mr: 1 }} />
                       Edit
                     </Button>
-                    <Button size="small" variant="outlined">
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      onClick={() => navigate(`/projects/${project._id}`)}
+                    >
                       <VisibilityIcon sx={{ mr: 1 }} />
                       View
                     </Button>

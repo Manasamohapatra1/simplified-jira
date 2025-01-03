@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import './App.css'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import HomePage from './components/HomePage'
@@ -11,6 +10,7 @@ import UserProfile from './components/Profile/UserProfile';
 import ProjectsList from './components/Projects/ProjectsList';
 import IssuesList from './components/Issues/IssuesList';
 import IssueDetails from './components/Issues/IssueDetails';
+import ProjectDetails from './components/Projects/ProjectDetails';
 
 
 function App() {
@@ -28,7 +28,7 @@ function App() {
               <Route path="/projects" element={<PrivateRoute><ProjectsList /></PrivateRoute>} />
               <Route path="/projects/:projectId/issues" element={<PrivateRoute><IssuesList /></PrivateRoute>} />
               <Route path="/issues/:issueId" element={<PrivateRoute><IssueDetails /></PrivateRoute>} />
-
+              <Route path="/projects/:projectId" element={<PrivateRoute><ProjectDetails /></PrivateRoute>} />
             </Route>   
           </Routes>
       </Router>
