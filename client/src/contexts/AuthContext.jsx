@@ -12,13 +12,15 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(!!token); // Set true if token exists
   }, []);
 
-  const login = (token) => {
+  const login = (token, email) => {
     localStorage.setItem("token", token);
+    localStorage.setItem("email", email);
     setIsAuthenticated(true);
   };
 
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("email");
     setIsAuthenticated(false);
     window.location.reload();
   };

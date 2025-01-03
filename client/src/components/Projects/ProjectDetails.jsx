@@ -22,6 +22,7 @@ const ProjectDetails = () => {
   const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
+  const email = localStorage.getItem("email");
 
   // Fetch project details on mount
   useEffect(() => {
@@ -176,17 +177,19 @@ const ProjectDetails = () => {
         <Typography variant="body1" sx={{ mb: 4 }}>
           {project.description}
         </Typography>
-
-        <Button
-          variant="contained"
-          sx={{ mr: 2 }}
-          onClick={() => handleEdit(project)}
-        >
-          Edit Project
-        </Button>
-        <Button variant="outlined" color="error" onClick={handleDelete}>
-          Delete Project
-        </Button>
+        {project.ownerId.email === email && (
+          <>
+          <Button
+            variant="contained"
+            sx={{ mr: 2 }}
+            onClick={() => handleEdit(project)}
+          >
+            Edit Project
+          </Button>
+          <Button variant="outlined" color="error" onClick={handleDelete}>
+            Delete Project
+          </Button>     
+        </>)}
         <Button
           variant="contained"
           color="primary"

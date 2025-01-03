@@ -44,7 +44,7 @@ const LoginForm = () => {
             if (response.ok) {
                 const result = await response.json();
                 console.log("Login Successful:", result);
-                login(result.token);
+                login(result.token, data.email);
                 navigate(from);            
             } else {
                 console.error("Login Failed");

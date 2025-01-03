@@ -19,7 +19,17 @@ exports.createProject = async (req, res) => {
 // Get all projects for the logged-in user
 exports.getProjects = async (req, res) => {
   try {
-    const projects = await Project.find({ ownerId: req.user.id });
+
+    const userId = req.user.id; // Assuming `req.user` contains the authenticated user's ID
+    // Fetch projects where the user is either the owner or a member
+    const projects = await Project.find({
+      $or: [
+        { ownerId: userId }, // Projects owned by the user
+        { "members.userId": userId }, // Projects where the user is a member
+      ],
+    })
+      .populate("ownerId", "username email") // Populate owner details
+      .populate("members.userId", "username email"); // Populate member details
     res.status(200).json(projects);
   } catch (err) {
     console.error(err);
@@ -30,11 +40,22 @@ exports.getProjects = async (req, res) => {
 // Get a specific project by ID
 exports.getProjectById = async (req, res) => {
   try {
+    const userId = req.user.id; // Assuming `req.user` contains the authenticated user's ID
     const project = await Project.findById(req.params.id)
       .populate("ownerId", "username email") // Populate owner details
       .populate("members.userId", "username email"); // Populate member details;
-    if (!project || project.ownerId._id.toString() !== req.user.id) {
+    if (!project) {
       return res.status(404).json({ message: "Project not found" });
+    }
+    // Check if the user is authorized to view this project
+    const isMember = project.members.some(
+      (member) => member.userId._id.toString() === userId
+    );
+
+    const isOwner = project.ownerId._id.toString() === userId;
+
+    if (!isOwner && !isMember) {
+      return res.status(403).json({ message: "You do not have access to this project" });
     }
     res.status(200).json(project);
   } catch (err) {

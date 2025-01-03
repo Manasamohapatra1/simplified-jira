@@ -39,6 +39,7 @@ const ProjectsList = () => {
   const [projectToEdit, setProjectToEdit] = useState(null);
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+  const email = localStorage.getItem("email");
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -265,6 +266,7 @@ const ProjectsList = () => {
                     },
                   }}
                 >
+                  {project.ownerId.email === email && (
                   <IconButton
                     sx={{
                       position: "absolute",
@@ -279,7 +281,7 @@ const ProjectsList = () => {
                     onClick={() => handleDelete(project._id)}
                   >
                     <DeleteIcon />
-                  </IconButton>
+                  </IconButton>)}
 
                   <CardContent sx={{ overflow: "hidden" }}>
                     <Typography variant="h5" noWrap sx={{ fontWeight: 500 }}>
@@ -296,6 +298,12 @@ const ProjectsList = () => {
                     >
                       {project.description}
                     </Typography>
+                    <Typography variant="caption">
+                      Role:{" "}
+                      {project.ownerId.email === email
+                        ? "Owner"
+                        : project.members.find((m) => m.userId.email === email).role}
+                    </Typography>
                   </CardContent>
 
                   <CardActions
@@ -305,14 +313,15 @@ const ProjectsList = () => {
                       mt: "auto",
                     }}
                   >
-                    <Button
+                    {project.ownerId.email === email &&
+                    (<Button
                       size="small"
                       variant="outlined"
                       onClick={() => handleEdit(project)}
                     >
                       <EditIcon sx={{ mr: 1 }} />
                       Edit
-                    </Button>
+                    </Button>)}
                     <Button
                       size="small"
                       variant="outlined"
