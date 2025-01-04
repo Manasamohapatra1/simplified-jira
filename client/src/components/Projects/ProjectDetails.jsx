@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Box, Button, Typography, Paper } from "@mui/material";
+import {
+  Box,
+  Button,
+  Typography,
+  Paper,
+  CircularProgress,
+} from "@mui/material";
 import { apiFetch } from "../../api/apiUtility";
 import AddMemberForm from "./AddMemberForm";
 import ProjectMembersList from "./ProjectMembersList";
@@ -15,6 +21,7 @@ const ProjectDetails = () => {
   const [editingProjectId, setEditingProjectId] = useState(null);
   const [projectToEdit, setProjectToEdit] = useState(null);
   const [userRole, setUserRole] = useState(null); // Store the user's role
+  const [issuesSummary, setIssuesSummary] = useState(null); // State for issues summary
   const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
@@ -40,6 +47,16 @@ const ProjectDetails = () => {
           const member = data.members.find((m) => m.userId.email === email);
           setUserRole(member?.role || "Contributor");
         }
+        // Fetch issues summary
+        const issuesResponse = await apiFetch(`projects/${projectId}/stats`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        const issuesData = await issuesResponse.json();
+        setIssuesSummary(issuesData);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -206,6 +223,49 @@ const ProjectDetails = () => {
         >
           View Issues
         </Button>
+      </Box>
+      {/* Issues Summary Section */}
+      <Box sx={{ mt: 4 }}>
+        <Typography variant="h5" gutterBottom>
+          Issues Summary
+        </Typography>
+        {issuesSummary ? (
+          <Box>
+            <Typography variant="body1">
+              <strong>Total Issues:</strong> {issuesSummary.totalIssues}
+            </Typography>
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="body2" gutterBottom>
+                <strong>Issues by Category:</strong>
+              </Typography>
+              <ul>
+                {Object.entries(issuesSummary.issuesByCategory).map(
+                  ([category, count]) => (
+                    <li key={category}>
+                      {category}: {count}
+                    </li>
+                  )
+                )}
+              </ul>
+            </Box>
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="body2" gutterBottom>
+                <strong>Issues by Status:</strong>
+              </Typography>
+              <ul>
+                {Object.entries(issuesSummary.issuesByStatus).map(
+                  ([status, count]) => (
+                    <li key={status}>
+                      {status}: {count}
+                    </li>
+                  )
+                )}
+              </ul>
+            </Box>
+          </Box>
+        ) : (
+          <CircularProgress />
+        )}
       </Box>
 
       {/* Right Panel: Members List */}
