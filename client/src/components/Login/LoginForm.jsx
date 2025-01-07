@@ -39,7 +39,6 @@ const LoginForm = () => {
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
-      console.log("Login Data:", data);
       const response = await apiFetch("auth/login", {
         method: "POST",
         headers: {
@@ -50,7 +49,6 @@ const LoginForm = () => {
 
       if (response.ok) {
         const result = await response.json();
-        console.log("Login Successful:", result);
         login(result.token, data.email);
         navigate(from);
       } else {

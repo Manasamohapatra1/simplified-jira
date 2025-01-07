@@ -10,7 +10,12 @@ exports.createProject = async (req, res) => {
     const ownerId = req.user.id; // Assuming `req.user` contains the authenticated user's ID
     const project = new Project({ name, description, ownerId });
     await project.save();
-    res.status(201).json(project);
+    // Populate owner details
+    const populatedProject = await Project.findById(project._id).populate(
+      "ownerId",
+      "name email"
+    );
+    res.status(201).json(populatedProject);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Failed to create project" });
