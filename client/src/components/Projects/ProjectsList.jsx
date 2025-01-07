@@ -21,6 +21,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
 import DnsIcon from "@mui/icons-material/Dns";
 import { motion } from "framer-motion";
+import Loader from "../Loader/Loader";
 
 // Placeholder SVG Icon
 function PlaceholderIcon(props) {
@@ -43,6 +44,7 @@ const ProjectsList = () => {
 
   useEffect(() => {
     const fetchProjects = async () => {
+      setLoading(true);
       try {
         const response = await apiFetch("projects", {
           method: "GET",
@@ -110,7 +112,11 @@ const ProjectsList = () => {
   };
 
   if (loading) {
-    return <Typography>Loading projects...</Typography>;
+    return (
+      <Typography>
+        <Loader />
+      </Typography>
+    );
   }
 
   if (error) {

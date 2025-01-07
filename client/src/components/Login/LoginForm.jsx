@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { apiFetch } from "../../api/apiUtility";
 import { useAuth } from "../../contexts/AuthContext";
+import Loader from "../Loader/Loader";
 
 const LoginForm = () => {
   const {
@@ -24,6 +25,7 @@ const LoginForm = () => {
   const navigate = useNavigate();
   const { setVisibleButton } = useVisibility();
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const location = useLocation();
   const { login } = useAuth();
@@ -35,6 +37,7 @@ const LoginForm = () => {
   }, [setVisibleButton]);
 
   const onSubmit = async (data) => {
+    setIsLoading(true);
     try {
       console.log("Login Data:", data);
       const response = await apiFetch("auth/login", {
@@ -57,6 +60,8 @@ const LoginForm = () => {
     } catch (error) {
       console.error("Error during login:", error);
       setError("Something went wrong. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -74,6 +79,7 @@ const LoginForm = () => {
         padding: theme.spacing(2),
       })}
     >
+      {isLoading && <Loader />}
       <Typography variant="h5" gutterBottom align="center">
         Login
       </Typography>

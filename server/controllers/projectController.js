@@ -1,6 +1,7 @@
 const { DESCRIBE } = require("sequelize/lib/query-types");
 const Project = require("../models/Project");
 const User = require("../models/User");
+const Issue = require("../models/Issue"); // Assuming there is an Issue model
 
 // Create a new project
 exports.createProject = async (req, res) => {
@@ -19,7 +20,6 @@ exports.createProject = async (req, res) => {
 // Get all projects for the logged-in user
 exports.getProjects = async (req, res) => {
   try {
-
     const userId = req.user.id; // Assuming `req.user` contains the authenticated user's ID
     // Fetch projects where the user is either the owner or a member
     const projects = await Project.find({
@@ -55,7 +55,9 @@ exports.getProjectById = async (req, res) => {
     const isOwner = project.ownerId._id.toString() === userId;
 
     if (!isOwner && !isMember) {
-      return res.status(403).json({ message: "You do not have access to this project" });
+      return res
+        .status(403)
+        .json({ message: "You do not have access to this project" });
     }
     res.status(200).json(project);
   } catch (err) {
@@ -72,17 +74,20 @@ exports.updateProject = async (req, res) => {
     console.log(project);
 
     if (!project) {
-      return res
-        .status(404)
-        .json({ message: "Project not found"});
+      return res.status(404).json({ message: "Project not found" });
     }
 
-    const loggedInUserRole = project.ownerId.toString() === req.user.id
-      ? "Owner"
-      : project.members.find((member) => member.userId._id.toString() === req.user.id)?.role;
+    const loggedInUserRole =
+      project.ownerId.toString() === req.user.id
+        ? "Owner"
+        : project.members.find(
+            (member) => member.userId._id.toString() === req.user.id
+          )?.role;
 
     if (!["Owner", "Admin"].includes(loggedInUserRole)) {
-      return res.status(403).json({ message: "You do not have permission to edit this project" });
+      return res
+        .status(403)
+        .json({ message: "You do not have permission to edit this project" });
     }
 
     project.name = name || project.name;
@@ -124,7 +129,7 @@ exports.addMember = async (req, res) => {
   try {
     const { email, role } = req.body;
     const projectId = req.params.id;
-    console.log(req.body);  
+    console.log(req.body);
 
     const project = await Project.findById(projectId);
 
@@ -132,19 +137,26 @@ exports.addMember = async (req, res) => {
       return res.status(404).json({ message: "Project not found" });
     }
 
-    const loggedInUserRole = project.ownerId.toString() === req.user.id
-      ? "Owner"
-      : project.members.find((member) => member.userId._id.toString() === req.user.id)?.role;
+    const loggedInUserRole =
+      project.ownerId.toString() === req.user.id
+        ? "Owner"
+        : project.members.find(
+            (member) => member.userId._id.toString() === req.user.id
+          )?.role;
 
     if (!["Owner", "Admin"].includes(loggedInUserRole)) {
-      return res.status(403).json({ message: "You do not have permission to add members" });
+      return res
+        .status(403)
+        .json({ message: "You do not have permission to add members" });
     }
 
     // Find the user by email
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(404).json({ message: "User with this email does not exist" });
+      return res
+        .status(404)
+        .json({ message: "User with this email does not exist" });
     }
 
     // Check if the user is already a member
@@ -153,9 +165,11 @@ exports.addMember = async (req, res) => {
     );
 
     if (isAlreadyMember) {
-      return res.status(400).json({ message: "User is already a member of this project" });
+      return res
+        .status(400)
+        .json({ message: "User is already a member of this project" });
     }
-    
+
     // Add the user as a member with the specified role
     project.members.push({ userId: user._id, role: role || "Contributor" });
     await project.save();
@@ -166,7 +180,6 @@ exports.addMember = async (req, res) => {
       .populate("ownerId", "username email"); // Populate owner details
 
     res.status(200).json(updatedProject);
-
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Failed to add member" });
@@ -185,15 +198,22 @@ exports.removeMember = async (req, res) => {
       return res.status(404).json({ message: "Project not found" });
     }
 
-    const loggedInUserRole = project.ownerId.toString() === req.user.id
-      ? "Owner"
-      : project.members.find((member) => member.userId._id.toString() === req.user.id)?.role;
+    const loggedInUserRole =
+      project.ownerId.toString() === req.user.id
+        ? "Owner"
+        : project.members.find(
+            (member) => member.userId._id.toString() === req.user.id
+          )?.role;
 
     if (!["Owner", "Admin"].includes(loggedInUserRole)) {
-      return res.status(403).json({ message: "You do not have permission to add members" });
+      return res
+        .status(403)
+        .json({ message: "You do not have permission to add members" });
     }
 
-    project.members = project.members.filter((member) => member.userId.toString() !== memberId);
+    project.members = project.members.filter(
+      (member) => member.userId.toString() !== memberId
+    );
     await project.save();
 
     // Re-fetch the updated project with populated members
@@ -222,15 +242,22 @@ exports.updateMemberRole = async (req, res) => {
     }
 
     // Only the owner can update roles
-    const loggedInUserRole = project.ownerId.toString() === req.user.id
-      ? "Owner"
-      : project.members.find((member) => member.userId._id.toString() === req.user.id)?.role;
+    const loggedInUserRole =
+      project.ownerId.toString() === req.user.id
+        ? "Owner"
+        : project.members.find(
+            (member) => member.userId._id.toString() === req.user.id
+          )?.role;
 
     if (!["Owner", "Admin"].includes(loggedInUserRole)) {
-      return res.status(403).json({ message: "You do not have permission to add members" });
+      return res
+        .status(403)
+        .json({ message: "You do not have permission to add members" });
     }
 
-    const member = project.members.find((m) => m.userId.toString() === memberId);
+    const member = project.members.find(
+      (m) => m.userId.toString() === memberId
+    );
 
     if (!member) {
       return res.status(404).json({ message: "Member not found" });
@@ -248,5 +275,55 @@ exports.updateMemberRole = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Failed to update role" });
+  }
+};
+
+// Get issue statistics for a specific project
+exports.getIssueStats = async (req, res) => {
+  try {
+    const projectId = req.params.id;
+
+    // Verify that the project exists and the user has access
+    const project = await Project.findById(projectId);
+
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+
+    const isMember = project.members.some(
+      (member) => member.userId.toString() === req.user.id
+    );
+
+    const isOwner = project.ownerId.toString() === req.user.id;
+
+    if (!isOwner && !isMember) {
+      return res.status(403).json({ message: "Access denied to this project" });
+    }
+
+    // Fetch issues related to this project
+    const issues = await Issue.find({ projectId });
+
+    // Calculate statistics
+    const totalIssues = issues.length;
+
+    const issuesByCategory = issues.reduce((acc, issue) => {
+      acc[issue.type] = (acc[issue.type] || 0) + 1;
+      return acc;
+    }, {});
+
+    const issuesByStatus = issues.reduce((acc, issue) => {
+      acc[issue.status] = (acc[issue.status] || 0) + 1;
+      return acc;
+    }, {});
+
+    // Send the response
+    res.status(200).json({
+      totalIssues,
+      issuesByCategory,
+      issuesByStatus,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch issue statistics" });
   }
 };

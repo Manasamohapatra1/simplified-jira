@@ -1,4 +1,10 @@
-import { Box, Typography, CircularProgress } from "@mui/material";
+import {
+  Box,
+  Typography,
+  CircularProgress,
+  Avatar,
+  Stack,
+} from "@mui/material";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../../api/apiUtility";
@@ -70,16 +76,31 @@ const UserProfile = () => {
         backgroundColor: "background.paper",
       }}
     >
-      <Typography variant="h5" gutterBottom>
-        User Profile
-      </Typography>
-      <Typography variant="body1">
-        <strong>Full Name:</strong> {userInfo.username}
-      </Typography>
-      <Typography variant="body1">
-        <strong>Email:</strong> {userInfo.email}
-      </Typography>
-      {/* Add more fields as needed */}
+      <Stack direction="column" alignItems="center" spacing={2}>
+        {/* Profile Avatar */}
+        <Avatar
+          sx={{
+            width: 100,
+            height: 100,
+            bgcolor: "primary.main",
+            fontSize: "2rem",
+          }}
+        >
+          {userInfo.username[0].toUpperCase()}
+        </Avatar>
+        <Typography variant="h5" gutterBottom>
+          Welcome, {userInfo.username}!
+        </Typography>
+      </Stack>
+      <Box sx={{ mt: 3 }}>
+        <Typography variant="body1" gutterBottom>
+          <strong>Full Name:</strong> {userInfo.username}
+        </Typography>
+        <Typography variant="body1" gutterBottom>
+          <strong>Email:</strong> {userInfo.email}
+        </Typography>
+        {/* Add more fields as needed */}
+      </Box>
     </Box>
   );
 };
