@@ -216,12 +216,18 @@ const ProjectDetails = () => {
       )}
       {/* Left Content: Project Details */}
       <Box sx={{ flex: 3, display: "flex", flexDirection: "column", gap: 3 }}>
-        <Typography variant="h4" gutterBottom>
+        <Typography variant="h4" gutterBottom
+          component="h1" 
+          sx={{ fontWeight: "bold", mx: 2 }}
+        >
           {project.name}
         </Typography>
         <Card>
           <CardContent sx={{ position: "relative", minHeight: 150 }}>
-            <Typography variant="body1" sx={{ mb: 2 }}>
+          <Typography variant="h6" sx={{ mb: 1 }}>
+              Description
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 2, opacity: 0.8 }}>
               {project.description}
             </Typography>
             {project.ownerId.email === email && (
@@ -247,19 +253,28 @@ const ProjectDetails = () => {
         <Box
           sx={{
             display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
+            gridTemplateColumns: "repeat(2, 1fr)",
             gap: 2,
             mt: 3,
           }}
         >
           <Card sx={{ p: 2, textAlign: "center" }}>
-            <Typography variant="h6">Issues</Typography>
+            <Typography>Issues</Typography>
             <Typography variant="h5" color="primary">
               {issuesSummary?.totalIssues || 0}
             </Typography>
           </Card>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "flex-start" }}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => navigate(`/projects/${projectId}/issues`)}
+            >
+              View All Issues
+            </Button>
+          </Box>
           <Card sx={{ p: 2 }}>
-            <Typography variant="h6">By Category</Typography>
+            {/* <Typography >By Category</Typography> */}
             {Object.entries(issuesSummary?.issuesByCategory || {}).map(
               ([category, count]) => (
                 <Typography
@@ -277,7 +292,7 @@ const ProjectDetails = () => {
             )}
           </Card>
           <Card sx={{ p: 2 }}>
-            <Typography variant="h6">By Status</Typography>
+            {/* <Typography >By Status</Typography> */}
             {Object.entries(issuesSummary?.issuesByStatus || {}).map(
               ([status, count]) => (
                 <Typography key={status} variant="body2">
@@ -287,15 +302,7 @@ const ProjectDetails = () => {
             )}
           </Card>
         </Box>
-        <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => navigate(`/projects/${projectId}/issues`)}
-          >
-            View Issues
-          </Button>
-        </Box>
+        
       </Box>
 
       {/* Right Panel: Members List */}
