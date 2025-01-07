@@ -297,6 +297,7 @@ const ProjectsList = () => {
                       variant="body2"
                       sx={{
                         opacity: 0.7,
+                        height: 40,
                         textOverflow: "ellipsis",
                         overflow: "hidden",
                         whiteSpace: "wrap",
