@@ -9,6 +9,8 @@ import {
   Card,
   CardContent,
   IconButton,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { apiFetch } from "../../api/apiUtility";
 import AddMemberForm from "./AddMemberForm";
@@ -18,9 +20,9 @@ import { motion } from "framer-motion";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import BugReportIcon from "@mui/icons-material/BugReport";
-import TaskIcon from "@mui/icons-material/Task";
-import LocalOfferIcon from "@mui/icons-material/LocalOffer";
-import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import StoryIcon from "@mui/icons-material/AutoStories";
+import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 
 const ProjectDetails = () => {
   const { projectId } = useParams();
@@ -165,20 +167,27 @@ const ProjectDetails = () => {
   const renderCategoryIcon = (category) => {
     switch (category.toLowerCase()) {
       case "story":
-        return <EmojiEventsIcon fontSize="small" />;
+        return <StoryIcon color="secondary" fontSize="small" />;
       case "task":
-        return <TaskIcon fontSize="small" />;
+        return <AssignmentIcon color="primary" fontSize="small" />;
       case "bug":
-        return <BugReportIcon fontSize="small" />;
+        return <BugReportIcon color="error" fontSize="small" />;
       case "epic":
-        return <LocalOfferIcon fontSize="small" />;
+        return <RocketLaunchIcon color="success" fontSize="small" />;
       default:
         return null;
     }
   };
 
   return (
-    <Box sx={{ display: "flex", gap: 4, flexDirection: "row", padding: 3 }}>
+    <Box
+      sx={{
+        display: "flex",
+        gap: 4,
+        flexDirection: { xs: "column", md: "row" },
+        padding: 3,
+      }}
+    >
       {editingProjectId && (
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
@@ -199,7 +208,7 @@ const ProjectDetails = () => {
         >
           <Box
             sx={{
-              width: "50%",
+              width: { xs: "90%", sm: "70%", md: "50%" },
               bgcolor: "white",
               p: 3,
               borderRadius: 2,
@@ -215,7 +224,14 @@ const ProjectDetails = () => {
         </motion.div>
       )}
       {/* Left Content: Project Details */}
-      <Box sx={{ flex: 3, display: "flex", flexDirection: "column", gap: 3 }}>
+      <Box
+        sx={{
+          flex: { xs: "none", md: 3 },
+          display: "flex",
+          flexDirection: "column",
+          gap: 3,
+        }}
+      >
         <Typography variant="h4" gutterBottom>
           {project.name}
         </Typography>
@@ -247,7 +263,11 @@ const ProjectDetails = () => {
         <Box
           sx={{
             display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
+            gridTemplateColumns: {
+              xs: "1fr",
+              sm: "repeat(2, 1fr)",
+              md: "repeat(3, 1fr)",
+            },
             gap: 2,
             mt: 3,
           }}
@@ -299,7 +319,14 @@ const ProjectDetails = () => {
       </Box>
 
       {/* Right Panel: Members List */}
-      <Paper sx={{ flex: 1, padding: 2, height: "100%", overflowY: "auto" }}>
+      <Paper
+        sx={{
+          flex: { xs: "none", md: 1 },
+          padding: 2,
+          height: "100%",
+          overflowY: "auto",
+        }}
+      >
         <ProjectMembersList
           members={project.members}
           userRole={userRole}
