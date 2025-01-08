@@ -261,7 +261,6 @@ const ProjectsList = () => {
                     position: "relative",
                     borderRadius: 2,
                     boxShadow: 2,
-                    height: "10vw",
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "space-between",
@@ -298,6 +297,7 @@ const ProjectsList = () => {
                       variant="body2"
                       sx={{
                         opacity: 0.7,
+                        height: 40,
                         textOverflow: "ellipsis",
                         overflow: "hidden",
                         whiteSpace: "wrap",
