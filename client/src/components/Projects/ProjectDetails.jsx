@@ -1,52 +1,70 @@
 import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   Box,
   Button,
   Typography,
-  Card,
-  IconButton,
+  Paper,
   Grid,
-  Tooltip,
-  Select,
-  MenuItem,
-  FormControl,
+  Card,
+  CardContent,
+  IconButton,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { apiFetch } from "../../api/apiUtility";
-import IssueForm from "./IssueForm";
-import { useNavigate, useParams } from "react-router-dom";
+import AddMemberForm from "./AddMemberForm";
+import ProjectMembersList from "./ProjectMembersList";
+import ProjectForm from "./ProjectForm";
+import { motion } from "framer-motion";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import BugReportIcon from "@mui/icons-material/BugReport";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import StoryIcon from "@mui/icons-material/AutoStories";
 import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
-import EditIcon from "@mui/icons-material/Edit";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import DeleteIcon from "@mui/icons-material/Delete";
-import AddIcon from "@mui/icons-material/Add";
-import { motion } from "framer-motion";
-import PostAddIcon from "@mui/icons-material/PostAdd";
 
-const IssuesList = () => {
-  const [issues, setIssues] = useState([]);
+const ProjectDetails = () => {
+  const { projectId } = useParams();
+  const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [editIssueId, setEditIssueId] = useState(null);
+  const [editingProjectId, setEditingProjectId] = useState(null);
+  const [projectToEdit, setProjectToEdit] = useState(null);
+  const [userRole, setUserRole] = useState(null);
+  const [issuesSummary, setIssuesSummary] = useState(null);
   const navigate = useNavigate();
-  const { projectId } = useParams();
 
   const token = localStorage.getItem("token");
+  const email = localStorage.getItem("email");
 
   useEffect(() => {
-    const fetchIssues = async () => {
+    const fetchProject = async () => {
       try {
-        const response = await apiFetch(`issues/${projectId}`, {
+        const response = await apiFetch(`projects/${projectId}`, {
           method: "GET",
           headers: {
-            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         });
         const data = await response.json();
-        setIssues(data);
+        setProject(data);
+        if (data.ownerId.email === email) {
+          setUserRole("Owner");
+        } else {
+          const member = data.members.find((m) => m.userId.email === email);
+          setUserRole(member?.role || "Contributor");
+        }
+        const issuesResponse = await apiFetch(`projects/${projectId}/stats`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        const issuesData = await issuesResponse.json();
+        setIssuesSummary(issuesData);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -54,261 +72,123 @@ const IssuesList = () => {
       }
     };
 
-    fetchIssues();
+    fetchProject();
   }, [projectId, token]);
 
-  const handleDelete = async (id) => {
+  const handleDelete = async () => {
     try {
-      await apiFetch(`issues/${id}`, {
+      await apiFetch(`projects/${projectId}`, {
         method: "DELETE",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
       });
-      setIssues((prev) => prev.filter((issue) => issue._id !== id));
+      navigate("/projects");
     } catch (err) {
-      alert(`Failed to delete issue: ${err.message}`);
+      alert(`Failed to delete project: ${err.message}`);
     }
   };
 
-  const handleStatusChange = (id, newStatus) => {
-    setIssues((prev) =>
-      prev.map((issue) =>
-        issue._id === id ? { ...issue, status: newStatus } : issue
-      )
-    );
+  const handleFormClose = () => {
+    setEditingProjectId(null);
+    setProjectToEdit(null);
   };
 
-  const handleFormSubmit = (newIssue) => {
-    if (editIssueId && editIssueId !== "new") {
-      setIssues((prev) =>
-        prev.map((issue) => (issue._id === newIssue._id ? newIssue : issue))
+  const handleEdit = (project) => {
+    setEditingProjectId(project._id);
+    setProjectToEdit(project);
+  };
+
+  const handleFormSubmit = (updatedProject) => {
+    setProject(updatedProject);
+    handleFormClose();
+  };
+
+  const handleAddMember = async (email) => {
+    try {
+      const response = await apiFetch(`projects/${projectId}/members`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, role: "Contributor" }),
+      });
+      const data = await response.json();
+      setProject(data);
+    } catch (err) {
+      alert(`Failed to add member: ${err.message}`);
+    }
+  };
+
+  const handleRemoveMember = async (memberId) => {
+    try {
+      const response = await apiFetch(
+        `projects/${projectId}/members/${memberId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
       );
-    } else {
-      setIssues((prev) => [newIssue, ...prev]);
-    }
-    setEditIssueId(null);
-  };
-
-  const getIconByType = (type) => {
-    switch (type) {
-      case "Task":
-        return <AssignmentIcon color="primary" />;
-      case "Bug":
-        return <BugReportIcon color="error" />;
-      case "Story":
-        return <StoryIcon color="secondary" />;
-      case "Epic":
-        return <RocketLaunchIcon color="success" />;
-      default:
-        return <AssignmentIcon />;
+      const data = await response.json();
+      setProject(data);
+    } catch (err) {
+      alert(`Failed to remove member: ${err.message}`);
     }
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "To Do":
-        return "text.secondary";
-      case "In Progress":
-        return "info.main";
-      case "Done":
-        return "success.main";
-      default:
-        return "text.secondary";
+  const handleUpdateRole = async (memberId, role) => {
+    try {
+      const response = await apiFetch(
+        `projects/${projectId}/members/${memberId}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ role }),
+        }
+      );
+      const data = await response.json();
+      setProject(data);
+    } catch (err) {
+      alert(`Failed to update role: ${err.message}`);
     }
   };
 
-  if (loading) return <Typography>Loading issues...</Typography>;
+  if (loading) return <Typography>Loading project details...</Typography>;
   if (error) return <Typography color="error">{error}</Typography>;
+
+  const renderCategoryIcon = (category) => {
+    switch (category.toLowerCase()) {
+      case "story":
+        return <StoryIcon color="secondary" fontSize="small" />;
+      case "task":
+        return <AssignmentIcon color="primary" fontSize="small" />;
+      case "bug":
+        return <BugReportIcon color="error" fontSize="small" />;
+      case "epic":
+        return <RocketLaunchIcon color="success" fontSize="small" />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <Box
       sx={{
-        maxWidth: 1200,
-        mx: "auto",
-        mt: 4,
-        px: 2,
-        bgcolor: "#f7f9fc",
-        borderRadius: 2,
-        boxShadow: 3,
+        display: "flex",
+        gap: 4,
+        flexDirection: { xs: "column", md: "row" },
+        padding: 3,
       }}
     >
-      {issues.length > 0 && (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            mb: 4,
-          }}
-        >
-          <Typography variant="h4" color="primary">
-            Issues
-          </Typography>
-          <Tooltip title="Add New Issue" arrow>
-            <motion.div
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              style={{ display: "inline-block" }}
-            >
-              <Button
-                variant="contained"
-                onClick={() => setEditIssueId("new")}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  bgcolor: "primary.main",
-                  "&:hover": {
-                    bgcolor: "primary.dark",
-                  },
-                }}
-              >
-                <AddIcon sx={{ mr: 1 }} />
-                Add Issue
-              </Button>
-            </motion.div>
-          </Tooltip>
-        </Box>
-      )}
-
-      {issues.length === 0 ? (
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            height: "60vh",
-            textAlign: "center",
-          }}
-        >
-          <PostAddIcon sx={{ fontSize: 120, color: "primary.main" }} />
-          <Typography variant="h6" color="text.secondary" sx={{ mt: 2 }}>
-            Add issues to your workspace
-          </Typography>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => setEditIssueId("new")}
-            sx={{
-              mt: 2,
-              px: 4,
-              py: 1,
-              fontSize: "16px",
-            }}
-          >
-            <AddIcon sx={{ mr: 1 }} />
-            Add Issue
-          </Button>
-        </Box>
-      ) : (
-        <Grid container spacing={3}>
-          {issues.map((issue) => (
-            <Grid item xs={12} key={issue._id}>
-              <motion.div
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Card
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    p: 2,
-                    boxShadow: 6,
-                    borderRadius: 2,
-                    borderLeft: `6px solid ${getStatusColor(issue.status)}`,
-                    "&:hover": {
-                      boxShadow: 8,
-                    },
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      mr: 2,
-                    }}
-                  >
-                    {getIconByType(issue.type)}
-                  </Box>
-
-                  <Box
-                    sx={{
-                      flex: 1,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <Typography
-                      variant="h6"
-                      noWrap
-                      sx={{
-                        maxWidth: "70%",
-                        textOverflow: "ellipsis",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      {issue.title}
-                    </Typography>
-                    <Tooltip title="Edit Issue">
-                      <IconButton onClick={() => setEditIssueId(issue._id)}>
-                        <EditIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </Box>
-
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 2,
-                    }}
-                  >
-                    <FormControl size="small">
-                      <Select
-                        value={issue.status}
-                        onChange={(e) =>
-                          handleStatusChange(issue._id, e.target.value)
-                        }
-                        sx={{
-                          minWidth: 120,
-                          "& .MuiSelect-select": {
-                            color: getStatusColor(issue.status),
-                          },
-                        }}
-                      >
-                        <MenuItem value="To Do">To Do</MenuItem>
-                        <MenuItem value="In Progress">In Progress</MenuItem>
-                        <MenuItem value="Done">Done</MenuItem>
-                      </Select>
-                    </FormControl>
-                    <Button
-                      variant="outlined"
-                      onClick={() => navigate(`/issues/${issue._id}`)}
-                    >
-                      <VisibilityIcon sx={{ mr: 1 }} />
-                      View
-                    </Button>
-                    <Tooltip title="Delete Issue">
-                      <IconButton
-                        color="error"
-                        onClick={() => handleDelete(issue._id)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </Box>
-                </Card>
-              </motion.div>
-            </Grid>
-          ))}
-        </Grid>
-      )}
-
-      {editIssueId === "new" && (
+      {editingProjectId && (
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -328,23 +208,135 @@ const IssuesList = () => {
         >
           <Box
             sx={{
-              width: "50%",
+              width: { xs: "90%", sm: "70%", md: "50%" },
               bgcolor: "white",
               p: 3,
               borderRadius: 2,
-              boxShadow: 6,
+              boxShadow: 4,
             }}
           >
-            <IssueForm
-              projectId={projectId}
-              onClose={() => setEditIssueId(null)}
+            <ProjectForm
+              onClose={handleFormClose}
               onSubmit={handleFormSubmit}
+              project={projectToEdit}
             />
           </Box>
         </motion.div>
       )}
+      {/* Left Content: Project Details */}
+      <Box
+        sx={{
+          flex: { xs: "none", md: 3 },
+          display: "flex",
+          flexDirection: "column",
+          gap: 3,
+        }}
+      >
+        <Typography variant="h4" gutterBottom>
+          {project.name}
+        </Typography>
+        <Card>
+          <CardContent sx={{ position: "relative", minHeight: 150 }}>
+            <Typography variant="body1" sx={{ mb: 2 }}>
+              {project.description}
+            </Typography>
+            {project.ownerId.email === email && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: 8,
+                  right: 8,
+                }}
+              >
+                <IconButton
+                  color="primary"
+                  onClick={() => handleEdit(project)}
+                  aria-label="edit project"
+                >
+                  <EditIcon />
+                </IconButton>
+              </Box>
+            )}
+          </CardContent>
+        </Card>
+        {/* Issues Summary and Button */}
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: {
+              xs: "1fr",
+              sm: "repeat(2, 1fr)",
+              md: "repeat(3, 1fr)",
+            },
+            gap: 2,
+            mt: 3,
+          }}
+        >
+          <Card sx={{ p: 2, textAlign: "center" }}>
+            <Typography variant="h6">Issues</Typography>
+            <Typography variant="h5" color="primary">
+              {issuesSummary?.totalIssues || 0}
+            </Typography>
+          </Card>
+          <Card sx={{ p: 2 }}>
+            <Typography variant="h6">By Category</Typography>
+            {Object.entries(issuesSummary?.issuesByCategory || {}).map(
+              ([category, count]) => (
+                <Typography
+                  key={category}
+                  variant="body2"
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                  }}
+                >
+                  {renderCategoryIcon(category)} {category}: {count}
+                </Typography>
+              )
+            )}
+          </Card>
+          <Card sx={{ p: 2 }}>
+            <Typography variant="h6">By Status</Typography>
+            {Object.entries(issuesSummary?.issuesByStatus || {}).map(
+              ([status, count]) => (
+                <Typography key={status} variant="body2">
+                  {status}: {count}
+                </Typography>
+              )
+            )}
+          </Card>
+        </Box>
+        <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => navigate(`/projects/${projectId}/issues`)}
+          >
+            View Issues
+          </Button>
+        </Box>
+      </Box>
+
+      {/* Right Panel: Members List */}
+      <Paper
+        sx={{
+          flex: { xs: "none", md: 1 },
+          padding: 2,
+          height: "100%",
+          overflowY: "auto",
+        }}
+      >
+        <ProjectMembersList
+          members={project.members}
+          userRole={userRole}
+          onRemoveMember={handleRemoveMember}
+          onUpdateRole={handleUpdateRole}
+        />
+        <AddMemberForm userRole={userRole} onAddMember={handleAddMember} />
+      </Paper>
     </Box>
   );
 };
 
-export default IssuesList;
+export default ProjectDetails;
