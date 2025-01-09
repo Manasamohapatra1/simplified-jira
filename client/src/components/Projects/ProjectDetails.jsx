@@ -234,12 +234,18 @@ const ProjectDetails = () => {
           gap: 3,
         }}
       >
-        <Typography variant="h4" gutterBottom>
+        <Typography variant="h4" gutterBottom
+          component="h1" 
+          sx={{ fontWeight: "bold", mx: 2 }}
+        >
           {project.name}
         </Typography>
         <Card>
           <CardContent sx={{ position: "relative", minHeight: 150 }}>
-            <Typography variant="body1" sx={{ mb: 2 }}>
+            <Typography variant="h6" sx={{ mb: 1 }}>
+              Description
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 2, opacity: 0.8 }}>
               {project.description}
             </Typography>
             {project.ownerId.email === email && (
