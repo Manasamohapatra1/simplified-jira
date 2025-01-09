@@ -153,9 +153,10 @@ const ProjectsList = () => {
             display: "flex",
             alignItems: "center",
             fontWeight: 600,
+            fontSize: { xs: "6vw", md: "3vw" },
           }}
         >
-          <ProjectIcon sx={{ mr: 1, fontSize: "inherit" }} />
+          <ProjectIcon sx={{ mr: 1, fontSize: { md: "inherit" } }} />
           My Projects
         </Typography>
 
@@ -172,9 +173,10 @@ const ProjectsList = () => {
                   backgroundColor: "#115293",
                 },
                 transition: "transform 0.3s ease",
+                fontSize: { xs: "3vw", md: "1.2vw" },
               }}
             >
-              <AddIcon sx={{ mr: 1 }} />
+              <AddIcon sx={{ mr: 1, fontSize: "inherit" }} />
               Add Project
             </Button>
           </Tooltip>
