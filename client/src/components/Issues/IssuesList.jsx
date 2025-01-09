@@ -30,6 +30,7 @@ const IssuesList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editIssueId, setEditIssueId] = useState(null);
+  const [issueToEdit, setIssueToEdit] = useState(null);
   const navigate = useNavigate();
   const { projectId } = useParams();
 
@@ -89,6 +90,12 @@ const IssuesList = () => {
       setIssues((prev) => [newIssue, ...prev]);
     }
     setEditIssueId(null);
+    setIssueToEdit(null);
+  };
+
+  const handleEditClick = (issue) => {
+    setEditIssueId(issue._id);
+    setIssueToEdit(issue);
   };
 
   const getIconByType = (type) => {
@@ -248,7 +255,7 @@ const IssuesList = () => {
                       {issue.title}
                     </Typography>
                     <Tooltip title="Edit Issue">
-                      <IconButton onClick={() => setEditIssueId(issue._id)}>
+                      <IconButton onClick={() => handleEditClick(issue)}>
                         <EditIcon />
                       </IconButton>
                     </Tooltip>
@@ -302,7 +309,7 @@ const IssuesList = () => {
         </Grid>
       )}
 
-      {editIssueId === "new" && (
+      {(editIssueId === "new" || issueToEdit) && (
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -331,7 +338,11 @@ const IssuesList = () => {
           >
             <IssueForm
               projectId={projectId}
-              onClose={() => setEditIssueId(null)}
+              issue={issueToEdit}
+              onClose={() => {
+                setEditIssueId(null);
+                setIssueToEdit(null);
+              }}
               onSubmit={handleFormSubmit}
             />
           </Box>

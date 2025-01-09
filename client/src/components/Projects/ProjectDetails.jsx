@@ -9,6 +9,8 @@ import {
   Card,
   CardContent,
   IconButton,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { apiFetch } from "../../api/apiUtility";
 import AddMemberForm from "./AddMemberForm";
@@ -18,9 +20,9 @@ import { motion } from "framer-motion";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import BugReportIcon from "@mui/icons-material/BugReport";
-import TaskIcon from "@mui/icons-material/Task";
-import LocalOfferIcon from "@mui/icons-material/LocalOffer";
-import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import StoryIcon from "@mui/icons-material/AutoStories";
+import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 
 const ProjectDetails = () => {
   const { projectId } = useParams();
@@ -165,20 +167,27 @@ const ProjectDetails = () => {
   const renderCategoryIcon = (category) => {
     switch (category.toLowerCase()) {
       case "story":
-        return <EmojiEventsIcon fontSize="small" />;
+        return <StoryIcon color="secondary" fontSize="small" />;
       case "task":
-        return <TaskIcon fontSize="small" />;
+        return <AssignmentIcon color="primary" fontSize="small" />;
       case "bug":
-        return <BugReportIcon fontSize="small" />;
+        return <BugReportIcon color="error" fontSize="small" />;
       case "epic":
-        return <LocalOfferIcon fontSize="small" />;
+        return <RocketLaunchIcon color="success" fontSize="small" />;
       default:
         return null;
     }
   };
 
   return (
-    <Box sx={{ display: "flex", gap: 4, flexDirection: "row", padding: 3 }}>
+    <Box
+      sx={{
+        display: "flex",
+        gap: 4,
+        flexDirection: { xs: "column", md: "row" },
+        padding: 3,
+      }}
+    >
       {editingProjectId && (
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
@@ -199,7 +208,7 @@ const ProjectDetails = () => {
         >
           <Box
             sx={{
-              width: "50%",
+              width: { xs: "90%", sm: "70%", md: "50%" },
               bgcolor: "white",
               p: 3,
               borderRadius: 2,
@@ -215,19 +224,20 @@ const ProjectDetails = () => {
         </motion.div>
       )}
       {/* Left Content: Project Details */}
-      <Box sx={{ flex: 3, display: "flex", flexDirection: "column", gap: 3 }}>
-        <Typography variant="h4" gutterBottom
-          component="h1" 
-          sx={{ fontWeight: "bold", mx: 2 }}
-        >
+      <Box
+        sx={{
+          flex: { xs: "none", md: 3 },
+          display: "flex",
+          flexDirection: "column",
+          gap: 3,
+        }}
+      >
+        <Typography variant="h4" gutterBottom>
           {project.name}
         </Typography>
         <Card>
           <CardContent sx={{ position: "relative", minHeight: 150 }}>
-          <Typography variant="h6" sx={{ mb: 1 }}>
-              Description
-            </Typography>
-            <Typography variant="body1" sx={{ mb: 2, opacity: 0.8 }}>
+            <Typography variant="body1" sx={{ mb: 2 }}>
               {project.description}
             </Typography>
             {project.ownerId.email === email && (
@@ -253,28 +263,23 @@ const ProjectDetails = () => {
         <Box
           sx={{
             display: "grid",
-            gridTemplateColumns: "repeat(2, 1fr)",
+            gridTemplateColumns: {
+              xs: "1fr",
+              sm: "repeat(2, 1fr)",
+              md: "repeat(3, 1fr)",
+            },
             gap: 2,
             mt: 3,
           }}
         >
           <Card sx={{ p: 2, textAlign: "center" }}>
-            <Typography>Issues</Typography>
+            <Typography variant="h6">Issues</Typography>
             <Typography variant="h5" color="primary">
               {issuesSummary?.totalIssues || 0}
             </Typography>
           </Card>
-          <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "flex-start" }}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => navigate(`/projects/${projectId}/issues`)}
-            >
-              View All Issues
-            </Button>
-          </Box>
           <Card sx={{ p: 2 }}>
-            {/* <Typography >By Category</Typography> */}
+            <Typography variant="h6">By Category</Typography>
             {Object.entries(issuesSummary?.issuesByCategory || {}).map(
               ([category, count]) => (
                 <Typography
@@ -292,7 +297,7 @@ const ProjectDetails = () => {
             )}
           </Card>
           <Card sx={{ p: 2 }}>
-            {/* <Typography >By Status</Typography> */}
+            <Typography variant="h6">By Status</Typography>
             {Object.entries(issuesSummary?.issuesByStatus || {}).map(
               ([status, count]) => (
                 <Typography key={status} variant="body2">
@@ -302,11 +307,26 @@ const ProjectDetails = () => {
             )}
           </Card>
         </Box>
-        
+        <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => navigate(`/projects/${projectId}/issues`)}
+          >
+            View Issues
+          </Button>
+        </Box>
       </Box>
 
       {/* Right Panel: Members List */}
-      <Paper sx={{ flex: 1, padding: 2, height: "100%", overflowY: "auto" }}>
+      <Paper
+        sx={{
+          flex: { xs: "none", md: 1 },
+          padding: 2,
+          height: "100%",
+          overflowY: "auto",
+        }}
+      >
         <ProjectMembersList
           members={project.members}
           userRole={userRole}
