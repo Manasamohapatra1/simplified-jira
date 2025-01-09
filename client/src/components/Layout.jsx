@@ -21,7 +21,7 @@ const Layout = () => {
   const theme = useTheme();
   const { isAuthenticated, logout } = useAuth();
   return (
-    <div
+    <div id="layout-container"
       style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
     >
       {/* AppBar */}

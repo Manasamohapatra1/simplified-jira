@@ -181,6 +181,7 @@ const ProjectDetails = () => {
 
   return (
     <Box
+      id="project-details-container"
       sx={{
         display: "flex",
         gap: 4,
@@ -225,6 +226,7 @@ const ProjectDetails = () => {
       )}
       {/* Left Content: Project Details */}
       <Box
+        id="project-details-content"
         sx={{
           flex: { xs: "none", md: 3 },
           display: "flex",
