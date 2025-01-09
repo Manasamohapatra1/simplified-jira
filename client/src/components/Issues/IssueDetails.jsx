@@ -24,7 +24,7 @@ const IssueDetails = () => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Include token in headers
+          Authorization: `Bearer ${token}`,
         },
       });
       const data = await response.json();
@@ -38,7 +38,7 @@ const IssueDetails = () => {
   const handleAddComment = async () => {
     if (!newComment) return;
 
-    const comment = await apiFetch(`issues/${issueId}/comments`, {
+    const response = await apiFetch(`issues/${issueId}/comments`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -47,6 +47,7 @@ const IssueDetails = () => {
       body: JSON.stringify({ text: newComment }),
     });
 
+    const comment = await response.json();
     setComments((prev) => [...prev, comment]);
     setNewComment("");
   };
@@ -54,34 +55,115 @@ const IssueDetails = () => {
   if (!issue) return <Typography>Loading...</Typography>;
 
   return (
-    <Box>
-      <Typography variant="h4">{issue.title}</Typography>
-      <Typography>{issue.description}</Typography>
-      <Typography>Status: {issue.status}</Typography>
-      <Typography>Type: {issue.type}</Typography>
-      <Typography>Assignee: {issue.assignee?.name || "Unassigned"}</Typography>
+    <Box sx={{ p: 2 }}>
+      <Typography
+        variant="h4"
+        sx={{
+          mb: 2,
+          color: "#1976d2",
+          transition: "color 0.3s",
+          "&:hover": { color: "#004ba0" },
+        }}
+      >
+        {issue.title}
+      </Typography>
 
-      <Box sx={{ mt: 4 }}>
-        <Typography variant="h5">Comments</Typography>
-        <List>
+      <Box
+        sx={{
+          mb: 3,
+          p: 2,
+          border: "1px solid #ddd",
+          borderRadius: "4px",
+          backgroundColor: "#f9f9f9",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+          transition: "transform 0.3s, box-shadow 0.3s",
+          "&:hover": {
+            transform: "scale(1.02)",
+            boxShadow: "0 6px 12px rgba(0, 0, 0, 0.15)",
+          },
+        }}
+      >
+        <Typography>{issue.description}</Typography>
+      </Box>
+
+      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
+        <Typography sx={{ color: "#757575" }}>
+          Status: {issue.status}
+        </Typography>
+        <Typography sx={{ color: "#757575" }}>Type: {issue.type}</Typography>
+        <Typography sx={{ color: "#757575" }}>
+          Assignee: {issue.assignee?.name || "Unassigned"}
+        </Typography>
+      </Box>
+
+      <Box
+        sx={{
+          p: 2,
+          border: "1px solid #ddd",
+          borderRadius: "4px",
+          backgroundColor: "#ffffff",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+          transition: "transform 0.3s, box-shadow 0.3s",
+          "&:hover": {
+            transform: "scale(1.02)",
+            boxShadow: "0 6px 12px rgba(0, 0, 0, 0.15)",
+          },
+        }}
+      >
+        <Typography variant="h5" sx={{ mb: 2, color: "#1976d2" }}>
+          Comments
+        </Typography>
+        <List sx={{ mb: 2 }}>
           {comments.map((comment) => (
-            <ListItem key={comment._id}>
+            <ListItem
+              key={comment._id}
+              sx={{
+                p: 0,
+                mb: 1,
+                transition: "background-color 0.3s",
+                "&:hover": {
+                  backgroundColor: "#f0f0f0",
+                },
+              }}
+            >
               <Typography>
-                <strong>{comment.authorId?.name}:</strong> {comment.text}
+                <strong style={{ color: "#1976d2" }}>
+                  {comment.authorId?.name}:
+                </strong>{" "}
+                {comment.text}
               </Typography>
             </ListItem>
           ))}
         </List>
-        <TextField
-          label="Add a Comment"
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          fullWidth
-          sx={{ mt: 2 }}
-        />
-        <Button onClick={handleAddComment} variant="contained" sx={{ mt: 1 }}>
-          Add Comment
-        </Button>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
+          <TextField
+            label="Add a Comment"
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            fullWidth
+            sx={{
+              mr: 2,
+              "& .MuiOutlinedInput-root": {
+                "&:hover fieldset": {
+                  borderColor: "#1976d2",
+                },
+              },
+            }}
+          />
+          <Button
+            onClick={handleAddComment}
+            variant="contained"
+            sx={{
+              backgroundColor: "#1976d2",
+              "&:hover": {
+                backgroundColor: "#004ba0",
+              },
+              transition: "background-color 0.3s",
+            }}
+          >
+            Add Comment
+          </Button>
+        </Box>
       </Box>
     </Box>
   );
