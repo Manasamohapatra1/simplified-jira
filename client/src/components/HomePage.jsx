@@ -11,9 +11,12 @@ import { Link } from "react-router-dom";
 import BugReportIcon from "@mui/icons-material/BugReport";
 import TaskIcon from "@mui/icons-material/Task";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import { useAuth } from "../contexts/AuthContext";
 
 
 const HomePage = () => {
+
+    const { isAuthenticated } = useAuth();
     return (
         <div 
             style={{ 
@@ -46,7 +49,9 @@ const HomePage = () => {
                     <Button variant="contained" color="primary" size="large"
                         sx={{ borderRadius: 3}}
                     >
-                        <Link to="/projects" className="white-link">Get Started</Link>
+                        <Link to="/projects" className="white-link">
+                            {isAuthenticated ? "View Your Projects" : "Get Started"}
+                        </Link>
                     </Button>
                     {/* <Button variant="outlined" color="primary" size="large">
                         Learn More
