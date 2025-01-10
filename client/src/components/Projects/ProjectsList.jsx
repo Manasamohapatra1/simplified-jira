@@ -153,10 +153,10 @@ const ProjectsList = () => {
             display: "flex",
             alignItems: "center",
             fontWeight: 600,
-            fontSize: { xs: "6vw", md: "3vw" },
+            fontSize: { xs: "6vw", md: "2.5vw" },
           }}
         >
-          <ProjectIcon sx={{ mr: 1, fontSize: { md: "inherit" } }} />
+          <ProjectIcon sx={{ mr: 1, fontSize: { xs: "6vw", md: "2.5vw" } }} />
           My Projects
         </Typography>
 
@@ -173,7 +173,7 @@ const ProjectsList = () => {
                   backgroundColor: "#115293",
                 },
                 transition: "transform 0.3s ease",
-                fontSize: { xs: "3vw", md: "1.2vw" },
+                fontSize: { xs: "3vw", md: "1vw" },
               }}
             >
               <AddIcon sx={{ mr: 1, fontSize: "inherit" }} />
@@ -205,6 +205,8 @@ const ProjectsList = () => {
             sx={{
               width: "50%",
               bgcolor: "white",
+              backgroundColor: (theme) => theme.palette.background.paper,
+              color: (theme) => theme.palette.text.primary,
               p: 3,
               borderRadius: 2,
               boxShadow: 4,
@@ -292,7 +294,7 @@ const ProjectsList = () => {
                   )}
 
                   <CardContent sx={{ overflow: "hidden" }}>
-                    <Typography variant="h5" noWrap sx={{ fontWeight: 500 }}>
+                    <Typography variant="h6" noWrap sx={{ fontWeight: 500 }}>
                       {project.name}
                     </Typography>
                     <Typography

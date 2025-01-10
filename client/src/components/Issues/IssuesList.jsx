@@ -332,6 +332,8 @@ const IssuesList = () => {
               width: "50%",
               bgcolor: "white",
               p: 3,
+              backgroundColor: (theme) => theme.palette.background.paper,
+              color: (theme) => theme.palette.text.primary,
               borderRadius: 2,
               boxShadow: 4,
             }}
